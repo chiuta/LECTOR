@@ -1,22 +1,11 @@
 /* Rulează scenariile aplicației într-un motor de browser: node run-playwright.js <proiect> */
-const {chromium,firefox,webkit,devices}=require('playwright');
+// profilurile vin din projects.js
 const fs=require('fs'),path=require('path');
 const {start}=require('./serve');
 const APP=JSON.parse(fs.readFileSync(path.join(__dirname,'app.json'),'utf8'));
 const scen=fs.readFileSync(path.join(__dirname,'scen.js'),'utf8');
 const name=process.argv[2]||'chromium';
-const DESK={viewport:{width:1280,height:800}};
-const CHR=['--autoplay-policy=no-user-gesture-required'];
-const P={
- chromium:{b:chromium,opt:{args:CHR},ctx:DESK,offline:true},
- msedge:{b:chromium,opt:{channel:'msedge',args:CHR},ctx:DESK,offline:true},
- firefox:{b:firefox,opt:{firefoxUserPrefs:{'media.autoplay.default':0,'media.autoplay.blocking_policy':0}},ctx:DESK},
- webkit:{b:webkit,opt:{},ctx:DESK},
- iphone:{b:webkit,opt:{},ctx:devices['iPhone 13'],mobile:true},
- ipad:{b:webkit,opt:{},ctx:devices['iPad (gen 7)'],mobile:true},
- pixel:{b:chromium,opt:{args:CHR},ctx:devices['Pixel 7'],mobile:true,offline:true},
- galaxy:{b:chromium,opt:{args:CHR},ctx:devices['Galaxy S9+'],mobile:true}
-};
+const {P}=require('./projects');
 const cfg=P[name];if(!cfg){console.error('proiect necunoscut:',name,'— alege dintre',Object.keys(P).join(', '));process.exit(2)}
 const outDir=path.join(__dirname,'results');fs.mkdirSync(outDir,{recursive:true});
 async function runScen(pg,phase){

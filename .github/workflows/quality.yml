@@ -1,0 +1,63 @@
+name: Calitate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "41 6 * * 3" # săptămânal: linkuri și vulnerabilități noi
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: calitate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linkuri:
+    name: Linkuri externe
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: node tests/check-links.js
+
+  vulnerabilitati:
+    name: Dependențe de test (npm audit)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: tests
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+      - run: npm audit --audit-level=high
+
+  marime:
+    name: Buget de mărime
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Mărime fișiere
+        run: |
+          {
+            echo "### Mărime fișiere"
+            echo
+            echo "| Fișier | KB | gzip KB |"
+            echo "|---|---|---|"
+            for f in index.html sw.js manifest.webmanifest; do
+              raw=$(wc -c < "$f"); gz=$(gzip -9 -c "$f" | wc -c)
+              echo "| $f | $((raw/1024)) | $((gz/1024)) |"
+            done
+          } >> "$GITHUB_STEP_SUMMARY"

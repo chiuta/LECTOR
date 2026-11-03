@@ -35,7 +35,7 @@ textarea{width:100%;min-height:90px}
 button{cursor:pointer;min-height:44px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}select{min-height:44px;padding-right:26px;background-image:linear-gradient(45deg,transparent 50%,var(--m) 50%),linear-gradient(135deg,var(--m) 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px;background-repeat:no-repeat}input[type=file]{max-width:100%}input[type=range]{-webkit-appearance:auto;appearance:auto;min-height:32px}button:hover{background:var(--hov)}
 button.pri{background:var(--a);color:var(--onc);border:0;font-weight:700}
 :focus-visible{outline:2px solid var(--a);outline-offset:2px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}label.hint input[type=text]{min-width:0;flex:1 1 90px;width:100%;max-width:100%}label.hint{min-width:0;flex-wrap:wrap}
 #book{position:relative;font:var(--fs,20px)/1.8 Georgia,serif;max-width:46em;margin:0 auto;max-height:62vh;max-height:max(240px,calc(100dvh - var(--bar,160px) - 110px));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 4px}
 #book p{margin:0 0 1em}
 .s{cursor:pointer;border-radius:4px;-webkit-touch-callout:none}.s:hover{background:var(--hov)}
@@ -79,7 +79,7 @@ input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:22px;height:2
 .foot button{opacity:.85}
 </style>
 </head>
-<body>
+<body><noscript><p style="padding:16px;font:16px/1.5 system-ui,sans-serif">LECTOR are nevoie de JavaScript. / LECTOR needs JavaScript to run.</p></noscript>
 <header><h1>LECTOR</h1><span>cărți citite cu voce tare — cu vocile locale ale dispozitivului, fără cont</span></header>
 <main class="wrap">
  <div class="card">
@@ -124,7 +124,7 @@ input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:22px;height:2
 <script>
 'use strict';
 window.__errs=[];document.addEventListener('securitypolicyviolation',e=>{try{__errs.push('CSP: '+e.violatedDirective+' a blocat '+String(e.blockedURI).slice(0,80))}catch(_){}});window.addEventListener('error',e=>{try{if(/ResizeObserver loop/.test(e.message||''))return;__errs.push(String(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{__errs.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
-const APPV='v18';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
+const APPV='v19';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
 async function verifiedText(url,hash){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status+' la '+url);const buf=await r.arrayBuffer();let ok=false;try{const d=await crypto.subtle.digest('SHA-384',buf);let b='';new Uint8Array(d).forEach(x=>b+=String.fromCharCode(x));ok=('sha384-'+btoa(b))===hash}catch(e){ok=false}
  if(!ok&&!confirm(trStr('Biblioteca externă are altă amprentă decât cea așteptată (')+url.split('/').pop()+trStr('). Poate fi o versiune modificată. Continui oricum?')))throw new Error('integritate neconfirmată');return new TextDecoder().decode(buf)}
 
@@ -246,7 +246,7 @@ function setBook(chs,key,title,skipSave){chs=splitBig(chs.filter(c=>c.text&&c.te
  let sv=null;try{sv=JSON.parse(store.get('lector.pos.'+key)||'null')}catch(e){}ci=sv&&sv.c<chs.length?sv.c:0;openChapter(ci,sv?sv.s:0);
  try{if('mediaSession' in navigator&&window.MediaMetadata){navigator.mediaSession.metadata=new MediaMetadata({title:title||'LECTOR'});const h={play:()=>{if(!playing)$('play').click()},pause:()=>{if(playing)$('play').click()},nexttrack:()=>go(1),previoustrack:()=>go(-1)};for(const a in h){try{navigator.mediaSession.setActionHandler(a,h[a])}catch(e){}}}}catch(e){}
  if(!skipSave&&DB.db)DB.saveBook(key,(title||'Fără titlu').slice(0,120),chs,Date.now()).then(async r=>{await renderLib();if(r===null)$('libnote').textContent='Cartea nu a putut fi salvată în bibliotecă (spațiu insuficient sau stocare blocată).'})}
-function openChapter(i,s){s=s||0;stop();pFlush();ci=i;$('chs').value=i;sents=split(chapters[i].text);si=Math.min(s,Math.max(0,sents.length-1));const b=$('book');b.textContent='';b.classList.toggle('big',sents.length>300);
+function openChapter(i,s){i=+i;if(!chapters||!chapters[i]){try{$('chs').value=ci}catch(e){}return}s=s||0;stop();pFlush();ci=i;$('chs').value=i;sents=split(chapters[i].text);si=Math.min(s,Math.max(0,sents.length-1));const b=$('book');b.textContent='';b.classList.toggle('big',sents.length>300);
  const h=document.createElement('div');h.className='ch';h.textContent=chapters[i].title;b.appendChild(h);let p=document.createElement('p');b.appendChild(p);
  sents.forEach((x,k)=>{const sp=document.createElement('span');sp.className='s';sp.textContent=x.t+' ';sp.id='s'+k;sp.tabIndex=-1;sp.setAttribute('role','button');sp.onclick=()=>{si=k;mark();if(playing)restart();else savePos()};p.appendChild(sp);if(x.np&&k<sents.length-1){p=document.createElement('p');b.appendChild(p)}});
  mark();b.scrollTop=0;mark()}
