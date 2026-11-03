@@ -55,7 +55,8 @@ async function runScen(pg,phase){
     else out=await runScen(pg,undefined);
     delete out.exportB64;res.probe=out.probe;
     for(const r of out.R)chk('scenariu: '+r.n,r.ok,r.d);
-    const allErrs=[...pageErrs,...(out.errs||[])],netErrs=allErrs.filter(e=>/importScripts|cdn\.jsdelivr|Failed to fetch dynamically|NetworkError|Load failed/i.test(e)),jsErrs=allErrs.filter(e=>!netErrs.includes(e));
+    const allErrs=[...pageErrs,...(out.errs||[])].filter(e=>!/^CSP:/.test(e)),netErrs=allErrs.filter(e=>/importScripts|cdn\.jsdelivr|Failed to fetch dynamically|NetworkError|Load failed/i.test(e)),jsErrs=allErrs.filter(e=>!netErrs.includes(e));
+    const csp=await pg.evaluate(()=>(window.__errs||[]).filter(x=>/^CSP:/.test(x)));chk('fără încălcări CSP',csp.length===0,csp);
     chk('fără erori JS în pagină',jsErrs.length===0,jsErrs);
     chk('fără erori de rețea către CDN',netErrs.length===0,netErrs,true);
     await pg.screenshot({path:path.join(outDir,`${name}-${APP.app}.png`)}).catch(()=>{});

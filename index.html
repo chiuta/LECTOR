@@ -12,7 +12,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'none'; form-action 'none'; connect-src 'self' blob: data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://huggingface.co https://*.huggingface.co https://*.hf.co https://cas-bridge.xethub.hf.co https://tessdata.projectnaptha.com https://unpkg.com; frame-src 'none'; img-src 'self' data: blob:; media-src 'self' blob: data:; worker-src 'self' blob: data:">
 <title>LECTOR — cărți citite cu voce tare</title>
 <style>
 :root{--bg:#14110d;--p:#201b14;--t:#f2ead8;--m:#a79a80;--a:#e8b04a;--in:#2e271c;--inb:#4a3f2d;--bd:#3a3226;--hov:#3a3020;--onc:#1a1405;--barbg:#201b14f2;--warn:#ffb0a0;--wbg:#fff3c4;--wt:#000}
@@ -123,8 +123,8 @@ input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:22px;height:2
 <footer class="foot"><button id="vtest" type="button">🔊 Test voce</button> <button id="supp" type="button">🛟 Copiază detalii pentru suport</button></footer>
 <script>
 'use strict';
-window.__errs=[];window.addEventListener('error',e=>{try{if(/ResizeObserver loop/.test(e.message||''))return;__errs.push(String(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{__errs.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
-const APPV='v17';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
+window.__errs=[];document.addEventListener('securitypolicyviolation',e=>{try{__errs.push('CSP: '+e.violatedDirective+' a blocat '+String(e.blockedURI).slice(0,80))}catch(_){}});window.addEventListener('error',e=>{try{if(/ResizeObserver loop/.test(e.message||''))return;__errs.push(String(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{__errs.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
+const APPV='v18';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
 async function verifiedText(url,hash){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status+' la '+url);const buf=await r.arrayBuffer();let ok=false;try{const d=await crypto.subtle.digest('SHA-384',buf);let b='';new Uint8Array(d).forEach(x=>b+=String.fromCharCode(x));ok=('sha384-'+btoa(b))===hash}catch(e){ok=false}
  if(!ok&&!confirm(trStr('Biblioteca externă are altă amprentă decât cea așteptată (')+url.split('/').pop()+trStr('). Poate fi o versiune modificată. Continui oricum?')))throw new Error('integritate neconfirmată');return new TextDecoder().decode(buf)}
 
