@@ -1,2 +1,2 @@
 {"name":"tests","private":true,"description":"Teste automate (Playwright, simulator iOS, emulator Android) pentru aplicație","scripts":{"check":"node check.js","prepare-vendor":"node prepare.js","serve":"node serve.js","test":"node run-playwright.js chromium"},
-"devDependencies":{"@tesseract.js-data/ron":"1.0.0","axe-core":"4.10.2","pdfjs-dist":"4.10.38","playwright":"1.63.0","tesseract.js":"5.1.1","tesseract.js-core":"5.1.1"}}
+"devDependencies":{"@tesseract.js-data/ron":"1.0.0","axe-core":"4.14.0","pdfjs-dist":"4.10.38","playwright":"1.64.1","tesseract.js":"5.1.1","tesseract.js-core":"5.1.1"}}
