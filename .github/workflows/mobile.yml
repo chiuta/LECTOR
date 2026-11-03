@@ -22,8 +22,8 @@ jobs:
     # informativ: simulatorul iOS pe runner-ele GitHub este lent și uneori instabil
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -36,7 +36,7 @@ jobs:
         env:
           SOFT_FAIL: "export|blob de export|coadă" # simulatorul nu are encoder video hardware
         run: bash tests/ios-sim.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: rezultate-ios-simulator
@@ -54,8 +54,8 @@ jobs:
       matrix:
         api: [34, 35]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -79,7 +79,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
           script: SOFT_FAIL='export|blob de export|coadă' bash tests/android-run.sh ${{ matrix.api }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: rezultate-android-api${{ matrix.api }}
