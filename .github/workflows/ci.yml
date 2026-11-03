@@ -1,0 +1,100 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "23 5 * * 1" # săptămânal, ca să prindem versiuni noi de browsere
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Verificări statice
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/check.js
+
+  browsers:
+    name: ${{ matrix.project }} · ${{ matrix.os }}
+    needs: static
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - { os: ubuntu-latest, project: chromium, install: chromium, experimental: false }
+          - { os: ubuntu-latest, project: firefox, install: firefox, experimental: false }
+          - { os: ubuntu-latest, project: msedge, install: msedge, experimental: false }
+          - { os: ubuntu-latest, project: pixel, install: chromium, experimental: false }
+          - { os: ubuntu-latest, project: galaxy, install: chromium, experimental: false }
+          - { os: ubuntu-latest, project: webkit, install: webkit, experimental: true }
+          - { os: ubuntu-latest, project: iphone, install: webkit, experimental: true }
+          - { os: ubuntu-latest, project: ipad, install: webkit, experimental: true }
+          # macOS: WebKit-ul real de pe Mac, cel mai apropiat de Safari
+          - { os: macos-latest, project: webkit, install: webkit, experimental: false }
+          - { os: macos-latest, project: iphone, install: webkit, experimental: false }
+          - { os: macos-latest, project: ipad, install: webkit, experimental: false }
+          # Windows: Edge real
+          - { os: windows-latest, project: msedge, install: msedge, experimental: false }
+          - { os: windows-latest, project: firefox, install: firefox, experimental: false }
+    defaults:
+      run:
+        working-directory: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps ${{ matrix.install }}
+      - run: node prepare.js
+      - run: node run-playwright.js ${{ matrix.project }}
+      - name: Rezultate
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rezultate-${{ matrix.project }}-${{ matrix.os }}
+          path: tests/results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  lighthouse:
+    name: Lighthouse
+    needs: static
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx --yes @lhci/cli@0.14.0 autorun --config=lighthouserc.json
+        continue-on-error: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lighthouse
+          path: tests/lhci
+          if-no-files-found: ignore
+          retention-days: 14

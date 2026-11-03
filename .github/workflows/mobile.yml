@@ -1,0 +1,87 @@
+name: Mobil (simulator iOS și emulator Android)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "47 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios-simulator:
+    name: Safari în simulatorul iOS
+    runs-on: macos-latest
+    timeout-minutes: 45
+    # informativ: simulatorul iOS pe runner-ele GitHub este lent și uneori instabil
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - run: npm ci
+        working-directory: tests
+      - run: node prepare.js
+        working-directory: tests
+      - name: Rulează în Safari iOS
+        run: bash tests/ios-sim.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rezultate-ios-simulator
+          path: tests/results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  android-emulator:
+    name: Chrome în emulatorul Android (API ${{ matrix.api }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [34, 31]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - run: npm ci
+        working-directory: tests
+      - run: node prepare.js
+        working-directory: tests
+      - name: Activează KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Rulează în Chrome Android
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          target: google_apis
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+          script: bash tests/android-run.sh ${{ matrix.api }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rezultate-android-api${{ matrix.api }}
+          path: tests/results
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test runner</title>
+<style>body{font:14px/1.4 system-ui,sans-serif;margin:8px;background:#fff;color:#111}pre{white-space:pre-wrap;font-size:12px;margin:4px 0}iframe{width:100%;height:240px;border:1px solid #888}.ok{color:#080}.fail{color:#c00}</style></head>
+<body><b id="h">Test runner</b><pre id="o">pornit…</pre><iframe id="f" title="aplicație"></iframe>
+<script>
+/* Rulează scenariile aplicației într-un iframe de aceeași origine (pentru simulatorul iOS și emulatorul Android) și trimite raportul la server */
+const q=new URLSearchParams(location.search),NAME=q.get('name')||'device',SKIP=q.get('skipocr')==='1';
+const o=document.getElementById('o'),f=document.getElementById('f');const log=t=>{o.textContent+='\n'+t;console.log(t)};
+const loadF=()=>new Promise(r=>{f.onload=()=>r();f.src='/?t='+Date.now()});
+const reloadF=()=>new Promise(r=>{f.onload=()=>r();f.contentWindow.location.reload()});
+async function runScen(phase){const w=f.contentWindow;w.__res=undefined;w.__phase=phase;w.__skipOcr=SKIP;w.__done=r=>{w.__res=r};
+  const sc=await (await fetch('/__scen.js')).text();const s=w.document.createElement('script');s.textContent='{'+sc+'\n}';w.document.body.appendChild(s);
+  const t0=Date.now();while(w.__res===undefined&&Date.now()-t0<900000)await new Promise(r=>setTimeout(r,500));
+  return w.__res||{probe:{},R:[{n:'TIMEOUT scenariu',ok:false,d:'900s'}],errs:[]}}
+(async()=>{const rep={name:NAME,ua:navigator.userAgent,screen:[screen.width,screen.height],dpr:devicePixelRatio,secure:isSecureContext,R:[]};
+ try{const app=await (await fetch('/__app.json')).json();rep.app=app.app;document.getElementById('h').textContent=app.name+' · '+NAME;log(navigator.userAgent);
+  await loadF();f.contentWindow.localStorage.setItem('lang','ro');await reloadF();await new Promise(r=>setTimeout(r,1500));
+  let out;
+  if(app.app==='lec'){const a=await runScen('A');await reloadF();await new Promise(r=>setTimeout(r,1500));const b=await runScen('B');out={probe:a.probe,R:[...a.R,...b.R],errs:[...(a.errs||[]),...(b.errs||[])]}}
+  else out=await runScen(undefined);
+  delete out.exportB64;rep.probe=out.probe;rep.R=out.R;rep.errs=out.errs||[];
+ }catch(e){rep.R.push({n:'execuție runner',ok:false,d:String(e&&e.stack||e).slice(0,400)})}
+ o.textContent=rep.R.map(r=>(r.ok?'OK   ':'FAIL ')+r.n).join('\n');
+ const bad=rep.R.filter(r=>!r.ok).length;document.getElementById('h').className=bad?'fail':'ok';document.getElementById('h').textContent+=bad?(' — '+bad+' eșuate'):' — toate trec';
+ try{await fetch('/__report?name='+encodeURIComponent(NAME),{method:'POST',body:JSON.stringify(rep)})}catch(e){o.textContent+='\nraportul nu a putut fi trimis: '+e}
+})();
+</script></body></html>

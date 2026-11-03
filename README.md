@@ -1,5 +1,7 @@
 # LECTOR
 
+[![CI](https://github.com/chiuta/lector/actions/workflows/ci.yml/badge.svg)](https://github.com/chiuta/lector/actions/workflows/ci.yml) [![Mobil](https://github.com/chiuta/lector/actions/workflows/mobile.yml/badge.svg)](https://github.com/chiuta/lector/actions/workflows/mobile.yml) [![Site publicat](https://github.com/chiuta/lector/actions/workflows/live.yml/badge.svg)](https://github.com/chiuta/lector/actions/workflows/live.yml)
+
 Cărți citite cu voce tare, direct în browser. Un singur fișier HTML, fără cont, fără server. Textul nu pleacă din dispozitiv.
 
 Făcut pentru ASFAN. Versiunea 12.
@@ -45,3 +47,14 @@ Testat automat: sintaxă, jsdom (46 de verificări pe bibliotecă, migrare DB, c
 
 - **v12** — audit adversarial: reguli de pronunție cu cratimă dezactivau tot dicționarul (LECTOR); semnele de carte cu stocare coruptă aruncau excepție; importul unei copii ostile bloca pagina ~15 s (acum limite: 500 cărți, 5000 capitole); titlurile cărților și ale fragmentelor nu mai pot fi alterate de traducere. Interfață în 7 limbi.
 - **v11** — funcții noi, PWA, verificare de integritate pentru bibliotecile externe.
+
+## Teste automate (GitHub Actions)
+
+Fiecare modificare rulează aceleași scenarii (încărcare, export, bibliotecă, 7 limbi, accesibilitate axe, PWA offline) pe:
+
+- **Chromium, Firefox, WebKit** pe Linux; **WebKit (motorul Safari) și iPhone/iPad emulate** pe macOS; **Microsoft Edge** pe Windows și Linux; profiluri **Pixel 7** și **Galaxy S9+** (Android Chrome emulat).
+- **Safari real în simulatorul iOS** (macOS) și **Chrome real într-un emulator Android** (API 34 și 31) — workflow-ul „Mobil”.
+- **Lighthouse**, **CodeQL** (securitate), verificări statice (sintaxă, manifest, CSP, versiuni, amprente SHA-384 ale bibliotecilor) și o verificare zilnică a site-ului publicat.
+- La fiecare etichetă `v*` se publică automat o ediție cu pachetul PWA.
+
+Local: `cd tests && npm ci && node prepare.js && node run-playwright.js chromium` (alte proiecte: firefox, webkit, msedge, iphone, ipad, pixel, galaxy). Simulatoarele și emulatoarele nu reproduc memoria, bateria și vocile unui telefon real; rezultatele lor completează, nu înlocuiesc, o încercare pe dispozitiv.

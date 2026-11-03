@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /tests
+    schedule: { interval: weekly }
+    ignore:
+      # versiunile bibliotecilor din aplicație sunt fixate prin amprente SHA-384; se actualizează manual
+      - dependency-name: pdfjs-dist
+      - dependency-name: tesseract.js
+      - dependency-name: tesseract.js-core
+      - dependency-name: "@tesseract.js-data/ron"
