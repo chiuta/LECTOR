@@ -1,5 +1,5 @@
 /* Service worker: învelișul aplicației + cache la rulare pentru bibliotecile externe (funcționare offline după prima folosire). */
-const V='v12';const SHELL='shell-'+V,RT='rt-'+V;
+const V='v14';const SHELL='shell-'+V,RT='rt-'+V;
 const SHELL_FILES=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 const RT_HOSTS=['cdn.jsdelivr.net','tessdata.projectnaptha.com','huggingface.co','cdn-lfs.huggingface.co','cdn-lfs.hf.co','cas-bridge.xethub.hf.co','unpkg.com'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(SHELL).then(c=>c.addAll(SHELL_FILES)).then(()=>self.skipWaiting()))});
