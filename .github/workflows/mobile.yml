@@ -34,6 +34,8 @@ jobs:
       - run: node prepare.js
         working-directory: tests
       - name: Rulează în Safari iOS
+        env:
+          SOFT_FAIL: "export|blob de export|coadă" # simulatorul nu are encoder video hardware
         run: bash tests/ios-sim.sh
       - uses: actions/upload-artifact@v4
         if: always()
@@ -77,7 +79,7 @@ jobs:
           profile: pixel_6
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
-          script: bash tests/android-run.sh ${{ matrix.api }}
+          script: SOFT_FAIL='export|blob de export|coadă' bash tests/android-run.sh ${{ matrix.api }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
