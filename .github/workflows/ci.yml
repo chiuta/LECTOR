@@ -69,7 +69,7 @@ jobs:
       - run: node run-playwright.js ${{ matrix.project }}
       - name: Rezultate
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: rezultate-${{ matrix.project }}-${{ matrix.os }}
           path: tests/results
@@ -91,7 +91,7 @@ jobs:
           node-version: 22
       - run: npx --yes @lhci/cli@0.14.0 autorun --config=lighthouserc.json
         continue-on-error: true
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lighthouse
