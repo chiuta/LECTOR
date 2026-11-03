@@ -205,7 +205,7 @@ const jsErrs=a=>a.filter(e=>!NET.test(e)&&!/ResizeObserver loop/.test(e));
 
   /* 11. Service worker, cache, offline, actualizare */
   {const {ctx,pg}=await fresh(br);await pg.goto(base);
-   const sw=await pg.evaluate(async()=>{if(!navigator.serviceWorker)return{no:true};try{const r=await Promise.race([navigator.serviceWorker.ready,new Promise((_,j)=>setTimeout(()=>j('timeout'),15000))]);const keys=await caches.keys();const c=keys.length?await (await caches.open(keys[0])).keys():[];return{state:r.active&&r.active.state,scope:r.scope,keys,n:c.length,urls:c.map(x=>new URL(x.url).pathname).slice(0,12)}}catch(e){return{err:String(e)}}});
+   const sw=await pg.evaluate(async()=>{if(!navigator.serviceWorker)return{no:true};try{const r=await Promise.race([navigator.serviceWorker.ready,new Promise((_,j)=>setTimeout(()=>j('timeout'),15000))]);for(let i=0;i<80&&r.active&&r.active.state!=='activated';i++)await new Promise(x=>setTimeout(x,100));const keys=await caches.keys();const c=keys.length?await (await caches.open(keys[0])).keys():[];return{state:r.active&&r.active.state,scope:r.scope,keys,n:c.length,urls:c.map(x=>new URL(x.url).pathname).slice(0,12)}}catch(e){return{err:String(e)}}});
    if(sw.no||sw.err){chk('service worker: înregistrat',false,sw,!cfg.offline)}
    else{chk('service worker: activ',sw.state==='activated',sw);
     const av=await pg.evaluate(()=>{const m=/const APPV='(v\d+)'/.exec(document.documentElement.outerHTML);return m&&m[1]}).catch(()=>null);
