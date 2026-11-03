@@ -58,3 +58,18 @@ Fiecare modificare rulează aceleași scenarii (încărcare, export, bibliotecă
 - La fiecare etichetă `v*` se publică automat o ediție cu pachetul PWA.
 
 Local: `cd tests && npm ci && node prepare.js && node run-playwright.js chromium` (alte proiecte: firefox, webkit, msedge, iphone, ipad, pixel, galaxy). Simulatoarele și emulatoarele nu reproduc memoria, bateria și vocile unui telefon real; rezultatele lor completează, nu înlocuiesc, o încercare pe dispozitiv.
+
+## Confidențialitate: ce rămâne pe dispozitiv și ce se contactează
+
+Nu există cont, server propriu, statistici sau reclame. **Conținutul tău (cărțile, textele, biblioteca ta și semnele de carte) este procesat local în browser și nu este încărcat nicăieri.** Totuși, aplicația contactează, la nevoie, aceste servicii externe, care pot vedea adresa IP a dispozitivului:
+
+- **cdn.jsdelivr.net** și **unpkg.com**: pdf.js (citire PDF) și tesseract.js (OCR), doar când deschizi un PDF sau pornești OCR; în plus, vocea neurală Piper și componentele ei, doar dacă o alegi.
+- **tessdata.projectnaptha.com**: datele de limbă pentru OCR.
+- **huggingface.co**: vocile neurale Piper, descărcate o singură dată, doar dacă alegi vocea neurală.
+- Vocea sistemului (Web Speech) este a dispozitivului; unele browsere pot folosi un serviciu de voce online, în funcție de vocea aleasă.
+
+Bibliotecile încărcate de pe CDN sunt verificate prin amprentă SHA-384 înainte de folosire. După prima descărcare, bibliotecile și modelele rămân în memoria browserului și funcționează offline. Aplicația nu poate seta antete HTTP de securitate (găzduirea pe GitHub Pages nu o permite), deci protecția se bazează pe politica de securitate din pagină (CSP) și pe verificarea amprentelor.
+
+## Licență și componente terțe
+
+Cod: [MIT](LICENSE). Aplicația folosește, încărcate la rulare și nepachetate în fișier: pdf.js (Apache-2.0), tesseract.js și datele Tesseract (Apache-2.0), Piper cu fonemizatorul espeak-ng (care poate avea licență GPL; verifică dacă redistribui). Fiecare își păstrează licența proprie.
