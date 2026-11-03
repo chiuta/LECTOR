@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14110d">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LECTOR">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta http-equiv="Content-Security-Policy" content="object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>LECTOR — cărți citite cu voce tare</title>
+<style>
+:root{--bg:#14110d;--p:#201b14;--t:#f2ead8;--m:#a79a80;--a:#e8b04a;--in:#2e271c;--inb:#4a3f2d;--bd:#3a3226;--hov:#3a3020;--onc:#1a1405;--barbg:#201b14f2;--warn:#ffb0a0;--wbg:#fff3c4;--wt:#000}
+:root[data-theme=sepia]{--bg:#f4ecd8;--p:#eadfc6;--t:#3b2f1e;--m:#6b5a3e;--a:#9a5b0f;--in:#f8f1de;--inb:#b8a67f;--bd:#cdbf9f;--hov:#e2d4b0;--onc:#fff8e8;--barbg:#eadfc6f2;--warn:#a3341f;color-scheme:light}
+:root[data-theme=contrast]{--bg:#000;--p:#0a0a0a;--t:#fff;--m:#d8d8d8;--a:#ffe600;--in:#000;--inb:#fff;--bd:#8a8a8a;--hov:#222;--onc:#000;--barbg:#000000f2;--warn:#ff8a80;--wbg:#00e5ff;--wt:#000}
+:root[data-theme=light]{--bg:#fff;--p:#f1f1f1;--t:#1a1a1a;--m:#555;--a:#0b5fd0;--in:#fff;--inb:#999;--bd:#d2d2d2;--hov:#e1ecfb;--onc:#fff;--barbg:#f1f1f1f2;--warn:#b3261e;color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;font:16px/1.5 system-ui,-apple-system,sans-serif;padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right);background:var(--bg);color:var(--t);padding-bottom:170px}
+header{padding:calc(14px + env(safe-area-inset-top)) 18px 14px;border-bottom:1px solid var(--bd);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+h1{margin:0;font-size:20px;letter-spacing:2px}header span{color:var(--m);font-size:13px}
+.wrap{max-width:860px;margin:auto;padding:16px;display:grid;grid-template-columns:minmax(0,1fr);gap:0 18px;align-items:start}
+.wrap>.rd{order:1}
+body.has .wrap>.rd{order:-1}
+@media(min-width:1000px){.wrap{max-width:1320px;grid-template-columns:minmax(300px,380px) minmax(0,1fr);padding:20px 24px}.wrap>.rd{grid-column:2;grid-row:1 / span 6;order:0!important;position:sticky;top:14px}body.has .wrap>.rd{order:0}.wrap>.card:not(.rd){grid-column:1}}
+@media(min-width:1000px){#book{max-height:calc(100vh - var(--bar,160px) - 90px);max-height:calc(100dvh - var(--bar,160px) - 90px);min-height:320px}}
+.card{background:var(--p);border-radius:12px;padding:14px;margin-bottom:14px}
+textarea,select,input,button{-webkit-appearance:none;appearance:none;font:inherit;font-size:16px;touch-action:manipulation;color:var(--t);background:var(--in);border:1px solid var(--inb);border-radius:8px;padding:8px}
+textarea{width:100%;min-height:90px}
+button{cursor:pointer;min-height:44px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}select{min-height:44px;padding-right:26px;background-image:linear-gradient(45deg,transparent 50%,var(--m) 50%),linear-gradient(135deg,var(--m) 50%,transparent 50%);background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;background-size:5px 5px;background-repeat:no-repeat}input[type=file]{max-width:100%}input[type=range]{-webkit-appearance:auto;appearance:auto;min-height:32px}button:hover{background:var(--hov)}
+button.pri{background:var(--a);color:var(--onc);border:0;font-weight:700}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+#book{position:relative;font:var(--fs,20px)/1.8 Georgia,serif;max-width:46em;margin:0 auto;max-height:62vh;max-height:max(240px,calc(100dvh - var(--bar,160px) - 110px));overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:10px 4px}
+#book p{margin:0 0 1em}
+.s{cursor:pointer;border-radius:4px;-webkit-touch-callout:none}.s:hover{background:var(--hov)}
+.s.on{background:var(--a);color:var(--onc)}
+.ch{color:var(--a);font:700 15px system-ui;margin:0 0 .6em;letter-spacing:1px}
+.lib-item{display:flex;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--bd)}
+.lib-item span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#bar{position:fixed;left:0;right:0;bottom:0;background:var(--barbg);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-top:1px solid var(--inb);padding:10px calc(14px + env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+@media(max-width:560px){.wrap{padding:10px}#bar .row{gap:6px}#book{--fs:19px}.wrap{padding:10px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+#bar .in{max-width:1272px;margin:auto}
+#bar .row{gap:8px}#bar .tp .vo{flex:1 1 180px;min-width:0}#bar .sl label{display:flex;align-items:center;gap:6px;flex:1 1 150px;min-width:0}#bar .sl input[type=range]{flex:1;min-width:60px;width:auto}#bar .sl select{flex:1 1 150px;min-width:0}.fs{display:flex;gap:6px}.fs button{min-width:44px;padding:8px}
+@media(min-width:700px){#bar .row.tp,#bar .row.sl{flex-wrap:nowrap}#bar .row.sl{margin-top:6px}}
+@media(max-width:699px){#bar .row.sl{margin-top:6px}#bar .tp #play{flex:1 1 auto}}
+#bar input[type=range]{padding:0;accent-color:var(--a)}
+@media(max-height:480px) and (orientation:landscape){header{padding-top:calc(6px + env(safe-area-inset-top));padding-bottom:6px}header span{display:none}#iostip{display:none}#book{max-height:max(160px,calc(100dvh - var(--bar,120px) - 70px))}#bar{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}#bar .in{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}#bar .row.tp{flex:2 1 320px}#bar .row.sl{flex:3 1 360px;margin-top:0!important}#bar .sl label:nth-of-type(2){display:none}#bar .sl select{flex:0 1 130px}#st{flex:1 0 100%;margin:0!important;font-size:12px}button,select{min-height:40px}}
+.hint{color:var(--m);font-size:13px}
+.warn{color:var(--warn)}
+.w{background:var(--wbg);color:var(--wt);border-radius:3px}
+
+#book p{margin:0 0 1em}
+#book.big p{content-visibility:auto;contain-intrinsic-size:auto 150px}
+body.dys #book{font-family:"Atkinson Hyperlegible",Verdana,"Trebuchet MS","Comic Sans MS",sans-serif;letter-spacing:.06em;word-spacing:.18em;line-height:2.05}
+#searchcard,#stats:empty{display:none}body.has #searchcard{display:block}
+.qr{display:block;width:100%;text-align:left;margin-top:6px;min-height:40px;font-size:15px}
+details.card>summary{cursor:pointer;font-weight:700;min-height:32px}
+details.card textarea{margin-top:8px}
+#stats{margin-top:4px}
+#lopanel{display:none}
+body.lo .wrap,body.lo #iostip{display:none}
+body.lo #bar .row.tp{display:none}
+body.lo #lopanel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;min-height:calc(100vh - var(--bar,160px) - 90px);min-height:calc(100dvh - var(--bar,160px) - 90px);padding:20px 16px}
+#lopanel h2{margin:0;font-size:26px;line-height:1.25;max-width:20em}
+.lo-b{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:nowrap;width:100%;max-width:520px}
+.lo-b button{min-height:88px;min-width:72px;padding:0 10px;font-size:30px;border-radius:18px}
+.lo-b #lplay{flex:1 1 140px;font-size:24px}
+input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:22px;height:22px;min-height:0;padding:0;flex:none;accent-color:var(--a)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+:focus-visible{outline:3px solid #ffb347;outline-offset:2px}
+.foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:14px 12px calc(14px + env(safe-area-inset-bottom))}
+.foot button{opacity:.85}
+</style>
+</head>
+<body>
+<header><h1>LECTOR</h1><span>cărți citite cu voce tare — cu vocile locale ale dispozitivului, fără cont</span></header>
+<main class="wrap">
+ <div class="card">
+  <div class="row"><input type="file" id="file" aria-label="Alege o carte" accept=".txt,.epub,.docx,.pdf,.html,.htm,.md,.xhtml"><span class="hint">.epub, .docx, .pdf, .txt, .html sau lipește textul mai jos (PDF: la prima folosire se încarcă pdf.js de pe internet; PDF-urile scanate trec automat prin OCR)</span></div>
+  <div class="row" style="margin-top:6px"><label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="ocrforce"> Citește PDF-ul prin OCR chiar dacă are text</label><label class="hint" style="display:flex;gap:6px;align-items:center">Pagini PDF <input type="text" id="pgrange" placeholder="ex. 1-50 sau 3,7,10-12" size="18" autocomplete="off" autocapitalize="off" spellcheck="false"></label></div>
+  <textarea id="paste" aria-label="Text de citit" placeholder="…sau lipește aici textul și apasă «Încarcă text»"></textarea>
+  <div class="row" style="margin-top:8px"><button id="load">Încarcă text</button><select id="chs" aria-label="Capitol" style="max-width:100%;flex:1"></select><button id="bmadd" title="Salvează poziția curentă">🔖 Semn</button><select id="bmsel" aria-label="Semne de carte" style="max-width:100%;flex:1" hidden></select><button id="wavexp" title="Experimental: voce neurală românească (Piper), descărcată de pe internet la prima folosire">⬇ Capitol ca audio WAV (experimental)</button></div>
+ </div>
+ <div class="card">
+  <div class="row" style="justify-content:space-between"><strong>Biblioteca</strong><span class="hint" id="libnote"></span></div>
+  <div id="lib"></div>
+  <div class="row" style="margin-top:8px"><button id="bkexp">⬇ Copie de rezervă bibliotecă</button><button id="bkimp">⬆ Importă copia</button><input type="file" id="bkfile" accept=".json,application/json" hidden></div>
+ </div>
+ <div class="card" id="searchcard">
+  <div class="row"><input type="search" id="q" aria-label="Caută în carte" placeholder="Caută în carte (fără diacritice, fără majuscule)" autocomplete="off" style="flex:1 1 220px"><span class="hint" id="qn" role="status"></span></div>
+  <div id="qres"></div>
+ </div>
+ <details class="card" id="setc"><summary>Setări: temă, font, pronunție</summary>
+  <div class="row" style="margin-top:8px"><label class="hint" style="display:flex;gap:6px;align-items:center">Temă <select id="theme"><option value="dark">Întunecat</option><option value="sepia">Sepia</option><option value="contrast">Contrast ridicat</option><option value="light">Alb</option></select></label><label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="dys"> Font pentru dislexie</label></div>
+  <div style="margin-top:10px"><label class="hint" style="display:flex;gap:6px;align-items:center"><input type="checkbox" id="prondef" checked> Citește corect abrevierile românești (etc., nr., str., pag., cca., ș.a.m.d., Sf., dr., prof., ing., fig., vol., art., ex.)</label>
+  <textarea id="pron" aria-label="Înlocuiri de pronunție" placeholder="Înlocuiri proprii, câte una pe linie: abreviere=cum se citește&#10;Ex:&#10;ASFAN=asfan&#10;CNRED=ce ene er e de"></textarea>
+  <div class="hint">Înlocuirile se aplică doar sunetului, nu textului afișat. „Sf.” se citește „Sfântul” (la feminin adaugă tu o linie, ex. Sf. Maria=Sfânta Maria). Se salvează automat.</div></div>
+ </details>
+ <div class="card rd"><div id="book" tabindex="-1"><p class="hint">Încarcă o carte ca să începi.</p></div></div>
+</main>
+<div id="lopanel" role="region" aria-label="Doar ascultare"><div class="hint">Doar ascultare</div><h2 id="lotitle"></h2><div class="hint" id="lost"></div><div class="lo-b"><button id="lprev" aria-label="Propoziția anterioară">⏮</button><button class="pri" id="lplay">▶ Citește</button><button id="lnext" aria-label="Propoziția următoare">⏭</button></div><button id="lexit">Arată textul</button></div>
+<div id="bar" role="region" aria-label="Controale de citire"><div class="in">
+ <div class="row tp">
+  <button id="prev" aria-label="Propoziția anterioară" title="Propoziția anterioară (←)">⏮</button><button class="pri" id="play">▶ Citește</button><button id="next" aria-label="Propoziția următoare" title="Propoziția următoare (→)">⏭</button>
+  <select id="voice" aria-label="Voce" class="vo"></select>
+ </div>
+ <div class="row sl">
+  <label class="hint">Viteză <input type="range" id="rate" min="0.6" max="2" step="0.05" value="1"></label>
+  <label class="hint">Ton <input type="range" id="pitch" min="0.6" max="1.5" step="0.05" value="1"></label>
+  <select id="sleep" aria-label="Temporizator de oprire"><option value="0">Fără oprire</option><option value="15">Oprește în 15 min</option><option value="30">30 min</option><option value="60">60 min</option></select>
+  <span class="fs"><button id="lo" aria-pressed="false" aria-label="Doar ascultare" title="Doar ascultare: ascunde textul">🎧</button><button id="fsm" aria-label="Text mai mic" title="Text mai mic">A−</button><button id="fsp" aria-label="Text mai mare" title="Text mai mare">A+</button></span>
+ </div>
+ <div class="hint" id="stats" aria-live="off"></div>
+ <div class="hint" id="st" role="status" aria-live="polite" style="margin-top:6px"></div>
+</div></div>
+<footer class="foot"><button id="supp" type="button">🛟 Copiază detalii pentru suport</button></footer>
+<script>
+'use strict';
+window.__errs=[];window.addEventListener('error',e=>{try{__errs.push(String(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{__errs.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
+const APPV='v11';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
+async function verifiedText(url,hash){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status+' la '+url);const buf=await r.arrayBuffer();let ok=false;try{const d=await crypto.subtle.digest('SHA-384',buf);let b='';new Uint8Array(d).forEach(x=>b+=String.fromCharCode(x));ok=('sha384-'+btoa(b))===hash}catch(e){ok=false}
+ if(!ok&&!confirm('Biblioteca externă are altă amprentă decât cea așteptată ('+url.split('/').pop()+'). Poate fi o versiune modificată. Continui oricum?'))throw new Error('integritate neconfirmată');return new TextDecoder().decode(buf)}
+
+const $=id=>document.getElementById(id);
+const noTTS=!(window.speechSynthesis&&window.SpeechSynthesisUtterance);
+const syn=noTTS?{getVoices:()=>[],cancel(){},speak(){}}:window.speechSynthesis;
+const NOTTS_MSG='Acest browser sau acest mod de previzualizare nu oferă sinteză vocală. Deschide fișierul direct în Chrome, Edge, Safari sau Firefox (dublu clic pe LECTOR.html).';
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+(function iosInit(){
+ const fitBar=()=>{try{const h=$('bar').offsetHeight;document.body.style.paddingBottom=(h+16)+'px';document.documentElement.style.setProperty('--bar',h+'px')}catch(e){}};fitBar();addEventListener('resize',fitBar);addEventListener('orientationchange',()=>setTimeout(fitBar,200));
+ try{if(window.ResizeObserver)new ResizeObserver(fitBar).observe($('bar'))}catch(e){}
+ if(IOS){try{$('file').removeAttribute('accept')}catch(e){}
+  const tip=document.createElement('div');tip.className='hint';tip.id='iostip';tip.style.marginTop='6px';tip.textContent='iPhone/iPad: ține ecranul aprins și aplicația în prim-plan, altfel Safari oprește vocea; la revenire citirea reia singură. Pentru voce românească: Setări › Accesibilitate › Conținut vorbit › Voci › Română (Ioana).';$('bar').querySelector('.in').appendChild(tip);
+  if(location.protocol==='file:'){const w=document.createElement('div');w.className='card warn';w.textContent='Ai deschis fișierul local. Safari pe iPhone/iPad nu rulează corect pagini deschise din aplicația Fișiere: încarcă LECTOR.html pe un site HTTPS (ex. serverul tău) și deschide-l de acolo, apoi „Adaugă pe ecranul principal”.';document.querySelector('.wrap').prepend(w)}}
+ try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
+})();
+let chapters=[],ci=0,sents=[],si=0,playing=false,bookKey='',sleepT=null,tok=0,errs=0,retries=0,wake=null,note='';
+let PA=null,stLast=0,ST={t:0,n:0};const PIPER_ID='__piper__',PIPER_VOICE='ro_RO-mihai-medium';
+function usePiper(){return !IOS&&$('voice').value===PIPER_ID}
+
+/* ---------- biblioteca (IndexedDB) ---------- */
+const DB={db:null,
+ open(){return new Promise(r=>{try{const q=indexedDB.open('lector',2);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains('books'))d.createObjectStore('books',{keyPath:'key'});if(!d.objectStoreNames.contains('chap'))d.createObjectStore('chap',{keyPath:'id'})};q.onsuccess=()=>{DB.db=q.result;r(true)};q.onerror=()=>r(false);q.onblocked=()=>r(false)}catch(e){r(false)}})},
+ run(names,mode,fn){return new Promise(res=>{if(!DB.db)return res(null);let t,out;try{t=DB.db.transaction(names,mode);out=fn(t)}catch(e){try{t&&t.abort()}catch(_){}return res(null)}t.oncomplete=()=>{let v=true;try{if(out&&typeof out==='object'&&'result' in out)v=out.result}catch(e){}res(v)};t.onerror=()=>res(null);t.onabort=()=>res(null)})},
+ rng(key){return IDBKeyRange.bound(key+'#',key+'#￿')},
+ all(){return DB.run('books','readonly',t=>t.objectStore('books').getAll())},
+ chaps(key){return DB.run('chap','readonly',t=>t.objectStore('chap').getAll(DB.rng(key)))},
+ async bookChapters(b){if(Array.isArray(b.chapters))return b.chapters;const r=await DB.chaps(b.key);if(!r)return null;return r.sort((x,y)=>x.i-y.i).map(x=>({title:x.title,text:x.text}))},
+ saveBook(key,title,chs,added){return DB.run(['books','chap'],'readwrite',t=>{const cs=t.objectStore('chap');cs.delete(DB.rng(key));let n=0;chs.forEach((c,i)=>{n+=c.text.length;cs.put({id:key+'#'+i,key,i,title:String(c.title||''),text:c.text})});return t.objectStore('books').put({key,title,added:added||Date.now(),n:chs.length,chars:n,v:2})})},
+ del(key){return DB.run(['books','chap'],'readwrite',t=>{t.objectStore('chap').delete(DB.rng(key));return t.objectStore('books').delete(key)})}};
+function fmtT(s){const m=Math.floor(s/60);return m<1?'<1 min':m<60?m+' min':Math.floor(m/60)+' h '+(m%60)+' min'}
+async function renderLib(){const box=$('lib');box.textContent='';
+ if(!DB.db){$('libnote').textContent='Biblioteca nu e disponibilă (stocarea e blocată în acest browser).';return}
+ const all=(await DB.all())||[];all.sort((a,b)=>(b.added||0)-(a.added||0));$('libnote').textContent=all.length?'':'Încă nu ai cărți salvate.';
+ for(const b of all){const d=document.createElement('div');d.className='lib-item';const s=document.createElement('span');let sv=null,st=null;try{sv=JSON.parse(store.get('lector.pos.'+b.key)||'null')}catch(e){}try{st=JSON.parse(store.get('lector.st.'+b.key)||'null')}catch(e){}
+  const n=b.n||(Array.isArray(b.chapters)?b.chapters.length:0);
+  s.textContent=b.title+(sv&&n?' — capitol '+(sv.c+1)+'/'+n:'')+(st&&st.t>=1?' · ascultat '+fmtT(st.t):'');s.title=b.title;
+  const o=document.createElement('button');o.textContent='Deschide';o.setAttribute('aria-label','Deschide '+b.title);
+  o.onclick=async()=>{o.disabled=true;try{const chs=await DB.bookChapters(b);if(!chs||!chs.length)throw 'capitolele nu au putut fi citite din bibliotecă';setBook(chs,b.key,b.title,true);if(Array.isArray(b.chapters))DB.saveBook(b.key,b.title,chs,b.added).then(renderLib)}catch(e){$('st').textContent='Nu am putut deschide cartea: '+(e&&e.message||e)}finally{o.disabled=false}};
+  const x=document.createElement('button');x.textContent='Șterge';x.setAttribute('aria-label','Șterge '+b.title);x.onclick=async()=>{if(!confirm('Ștergi „'+b.title+'” din bibliotecă?'))return;await DB.del(b.key);store.del('lector.pos.'+b.key);store.del('lector.bm.'+b.key);store.del('lector.st.'+b.key);renderLib()};
+  d.append(s,o,x);box.appendChild(d)}}
+DB.open().then(renderLib);
+
+/* ---------- OCR pentru PDF scanat (tesseract.js, local în browser) ---------- */
+const OCRMAX=IOS?60:200;
+async function getTess(){if(window.Tesseract)return window.Tesseract;await new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';sc.integrity='sha384-GJqSu7vueQ9qN0E9yLPb3Wtpd7OrgK8KmYzC8T1IysG1bcvxvIO4qtYR/D3A991F';sc.crossOrigin='anonymous';sc.onload=ok;sc.onerror=()=>no('nu am putut încărca modulul OCR (fără internet sau amprentă diferită)');document.head.appendChild(sc)});if(!window.Tesseract)throw 'modulul OCR lipsește';return window.Tesseract}
+function parseRange(str,n){str=String(str||'').trim();if(!str)return null;const set=new Set();for(const part of str.split(/[,;]\s*/)){const t=part.trim();if(!t)continue;let m;if((m=t.match(/^(\d+)$/))){set.add(+m[1])}else if((m=t.match(/^(\d*)\s*[-–]\s*(\d*)$/))&&(m[1]||m[2])){const a=m[1]?+m[1]:1,b=m[2]?+m[2]:n;for(let x=Math.max(1,Math.min(a,b));x<=Math.min(n,Math.max(a,b));x++)set.add(x)}else throw 'interval de pagini invalid (exemple: 1-50 sau 3,7,10-12)'}
+ const out=[...set].filter(x=>x>=1&&x<=n).sort((x,y)=>x-y);if(!out.length)throw 'intervalul de pagini e în afara documentului (are '+n+' pagini)';return out}
+const pageList=(n,str)=>parseRange(str,n)||Array.from({length:n},(_,i)=>i+1);
+async function ocrPdf(lib,data,onprog,pgStr){const T=await getTess();const doc=await lib.getDocument({data}).promise;const sel=pageList(doc.numPages,pgStr);const cut=sel.length>OCRMAX;const list=sel.slice(0,OCRMAX);const w=await T.createWorker('ron');const pages=[];const N=list.length;
+ try{for(let q=0;q<N;q++){const p=list[q];const pg=await doc.getPage(p);const vp=pg.getViewport({scale:IOS?1.5:2});const c=document.createElement('canvas');c.width=Math.round(vp.width);c.height=Math.round(vp.height);await pg.render({canvasContext:c.getContext('2d'),viewport:vp}).promise;const r=await w.recognize(c);pages.push(String(r.data.text||'').split('\n').map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean));c.width=c.height=0;if(onprog)onprog(q+1,N,cut)}}finally{try{await w.terminate()}catch(e){}}
+ return pdfToText(pages)}
+/* ---------- semne de carte ---------- */
+function bmGet(){try{return JSON.parse(store.get('lector.bm.'+bookKey)||'[]')}catch(e){return[]}}
+function renderBm(){const sel=$('bmsel');sel.textContent='';if(!bookKey){sel.hidden=true;return}const a=bmGet();sel.hidden=!a.length;
+ if(!a.length)return;const o0=document.createElement('option');o0.value='';o0.textContent='Semne ('+a.length+')';sel.appendChild(o0);
+ a.forEach((b,i)=>{const o=document.createElement('option');o.value=i;o.textContent=b.t;sel.appendChild(o)})}
+$('bmadd').onclick=()=>{if(!bookKey||!chapters.length){$('st').textContent='Încarcă mai întâi o carte.';return}
+ const a=bmGet();const t='Cap. '+(ci+1)+', prop. '+(si+1)+' — '+String((sents[si]&&sents[si].t)||'').slice(0,40);a.push({c:ci,s:si,t});store.set('lector.bm.'+bookKey,JSON.stringify(a.slice(-50)));renderBm();$('st').textContent='Semn salvat.'};
+$('bmsel').onchange=()=>{const a=bmGet(),b=a[+$('bmsel').value];$('bmsel').value='';if(b&&chapters[b.c])openChapter(b.c,b.s)};
+{const _sb=setBook;setBook=function(){const r=_sb.apply(this,arguments);renderBm();return r}}
+/* ---------- copie de rezervă a bibliotecii ---------- */
+$('bkexp').onclick=async()=>{const all=(await DB.all())||[];if(!all.length){$('libnote').textContent='Nu ai cărți salvate de exportat.';return}
+ try{const parts=['{"lector":1,"books":['],pos={},bm={},st={};let first=true;
+  for(const b of all){const chs=await DB.bookChapters(b);if(!chs)continue;const p=store.get('lector.pos.'+b.key);if(p)pos[b.key]=p;const m=store.get('lector.bm.'+b.key);if(m)bm[b.key]=m;const q=store.get('lector.st.'+b.key);if(q)st[b.key]=q;
+   parts.push((first?'':',')+JSON.stringify({key:b.key,title:b.title,added:b.added||0,chapters:chs}));first=false}
+  parts.push('],"pos":'+JSON.stringify(pos)+',"bm":'+JSON.stringify(bm)+',"st":'+JSON.stringify(st)+'}');
+  const blob=new Blob(parts,{type:'application/json'});const u=URL.createObjectURL(blob);const a=document.createElement('a');a.href=u;a.download='lector-biblioteca.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),30000)}
+ catch(e){$('libnote').textContent='Export eșuat: '+(e&&e.message||e)}};
+$('bkimp').onclick=()=>$('bkfile').click();
+$('bkfile').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{if(f.size>300*1024*1024)throw 'fișier prea mare';const j=JSON.parse(await f.text());if(!j||j.lector!==1||!Array.isArray(j.books))throw 'nu e o copie LECTOR';let n=0;
+  for(const b of j.books){if(!b||typeof b.key!=='string'||typeof b.title!=='string'||!Array.isArray(b.chapters)||!b.chapters.length||!b.chapters.every(c=>c&&typeof c.text==='string'))continue;
+   const ok=await DB.saveBook(b.key,b.title.slice(0,120),b.chapters.map(c=>({title:String(c.title||''),text:c.text})),+b.added||Date.now());if(ok===null)throw 'spațiu insuficient sau stocare blocată';
+   for(const [m,k] of [['pos','lector.pos.'],['bm','lector.bm.'],['st','lector.st.']])if(j[m]&&typeof j[m][b.key]==='string')store.set(k+b.key,j[m][b.key]);n++}
+  await renderLib();$('libnote').textContent='Am importat '+n+' cărți.'}catch(err){$('libnote').textContent='Import eșuat: '+(err&&err.message||err)}};
+
+
+/* ---------- voci ---------- */
+function curVoice(){return syn.getVoices().find(x=>x.name===$('voice').value)}
+function voiceNote(){if(usePiper()){note='';status();return}const vs=syn.getVoices();const hasRo=vs.some(v=>/^ro/i.test(v.lang));const cv=curVoice();
+ note=!vs.length?'Nu s-au găsit voci. Instalează o voce din setările sistemului (Text-to-speech).':(!hasRo?'Nu există nicio voce în română pe acest dispozitiv — textul românesc va suna greșit. '+(IOS?'Pe iPhone/iPad: Setări › Accesibilitate › Conținut vorbit › Voci › Română.':'Instalează o voce ro-RO.')+'':(cv&&!cv.localService?'Vocea aleasă folosește internetul și poate fi mai puțin stabilă; alege una marcată „locală” pentru citire offline.':''));status()}
+function loadVoices(){const vs=syn.getVoices();const sel=$('voice');const cur=sel.value;sel.innerHTML='';
+
+ const NOV=/^(Albert|Bad News|Bahh|Bells|Boing|Bubbles|Cellos|Good News|Jester|Organ|Superstar|Trinoids|Whisper|Wobble|Zarvox|Fred|Junior|Ralph|Kathy|Eddy|Flo|Grandma|Grandpa|Reed|Rocko|Sandy|Shelley)\b/;
+ [...vs].filter(v=>!(IOS||/Mac/.test(navigator.platform))||!NOV.test(v.name)||/^ro/i.test(v.lang)).sort((a,b)=>(/^ro/i.test(b.lang)-/^ro/i.test(a.lang))||((b.localService?1:0)-(a.localService?1:0))||a.name.localeCompare(b.name)).forEach(v=>{const o=document.createElement('option');o.value=v.name;o.textContent=v.name+' ('+v.lang+') · '+(v.localService?'locală':'online');sel.appendChild(o)});
+ if(!IOS){const o=document.createElement('option');o.value=PIPER_ID;o.textContent='Piper ro_RO mihai (neural, descărcare ~60 MB prima dată)';sel.appendChild(o)}
+ const want=store.get('lector.voice')||cur;if(want&&[...sel.options].some(o=>o.value===want))sel.value=want;voiceNote()}
+loadVoices();if(!noTTS){syn.onvoiceschanged=loadVoices;let vt=0;const vp=setInterval(()=>{if(syn.getVoices().length&&$('voice').options.length||++vt>20)clearInterval(vp);else loadVoices()},400)}
+$('voice').onchange=()=>{store.set('lector.voice',$('voice').value);voiceNote();restart()};
+$('rate').oninput=()=>{if(usePiper()&&PA)PA.playbackRate=+$('rate').value||1};$('rate').onchange=$('pitch').onchange=()=>{if(!usePiper())restart()};
+let fsz=+store.get('lector.fs')||0;const setFs=n=>{fsz=Math.max(14,Math.min(40,n));store.set('lector.fs',fsz);document.documentElement.style.setProperty('--fs',fsz+'px');$('book').style.setProperty('--fs',fsz+'px')};if(fsz)setFs(fsz);
+$('fsm').onclick=()=>setFs((fsz||parseFloat(getComputedStyle($('book')).fontSize)||20)-2);$('fsp').onclick=()=>setFs((fsz||parseFloat(getComputedStyle($('book')).fontSize)||20)+2);
+
+/* ---------- împărțire în propoziții ---------- */
+const ABBR=/(?:^|[\s(„"])(?:dr|dl|d-l|d-na|dna|nr|str|etc|sf|sfa|prof|ing|cca|ex|pag|fig|vol|art|lit|conf|lect|șef|asist|gen|col|mr|mrs|ms|st|vs|jr|sr|bd|ap|jud|loc|tel|ed|trad|ib|op|cit|ș\.a|m\.d|u\.a)\.$/i;
+const INIT=/(?:^|\s)\p{Lu}\.$/u;
+const MAXC=170;
+function paras(text){text=text.replace(/\r/g,'');if(/\n[ \t]*\n/.test(text))return text.split(/\n[ \t]*\n/).map(p=>p.replace(/\s*\n\s*/g,' ').trim()).filter(Boolean);return text.split('\n').map(p=>p.trim()).filter(Boolean)}
+function pieces(p){const raw=p.match(/[\s\S]+?(?:[.!?…]+["”»')\]]*(?=\s|$)|$)/g)||[p];const m=[];
+ for(let i=0;i<raw.length;i++){let s=raw[i].trim();if(!s)continue;while(i+1<raw.length&&(ABBR.test(s)||INIT.test(s))&&s.length<300){i++;s+=' '+raw[i].trim()}m.push(s)}
+ const out=[];for(let s of m){if(!/[\p{L}\p{N}]/u.test(s))continue;while(s.length>MAXC){let cut=-1;const w=s.slice(0,MAXC);const re=/[,;:–—]\s/g;let x;while((x=re.exec(w)))cut=x.index+1;if(cut<50)cut=w.lastIndexOf(' ');if(cut<30)cut=MAXC;if(cut>1&&/[\ud800-\udbff]/.test(s[cut-1]))cut--;out.push(s.slice(0,cut).trim());s=s.slice(cut).trim()}if(s)out.push(s)}
+ return out}
+function split(text){const out=[];paras(text).forEach(p=>{const ps=pieces(p);ps.forEach((t,i)=>out.push({t,np:i===ps.length-1}))});return out}
+
+/* ---------- carte / capitole ---------- */
+function splitBig(chs){const MAXCH=60000,PART=40000,out=[];
+ for(const c of chs){if(c.text.length<=MAXCH){out.push(c);continue}
+  const parts=[];let pos=0;const t=c.text;while(pos<t.length){let end=Math.min(t.length,pos+PART);if(end<t.length){let k=t.lastIndexOf('\n',end);if(k<pos+PART/2){k=t.lastIndexOf('. ',end);if(k>=pos+PART/2)k+=1;else k=-1}if(k>=pos+PART/2)end=k+1}
+   if(end>pos&&/[\ud800-\udbff]/.test(t[end-1]))end--;parts.push(t.slice(pos,end));pos=end}
+  parts.forEach((x,i)=>out.push({title:(c.title.slice(0,56)+' (partea '+(i+1)+'/'+parts.length+')'),text:x}))}
+ return out}
+function setBook(chs,key,title,skipSave){chs=splitBig(chs.filter(c=>c.text&&c.text.trim()));if(!chs.length){$('st').textContent='Fișierul nu conține text care poate fi citit.';return}document.body.classList.add('has');
+ stop();chapters=chs;bookKey=key;const sel=$('chs');sel.innerHTML='';chs.forEach((c,i)=>{const o=document.createElement('option');o.value=i;o.textContent=(i+1)+'. '+c.title;sel.appendChild(o)});
+ let sv=null;try{sv=JSON.parse(store.get('lector.pos.'+key)||'null')}catch(e){}ci=sv&&sv.c<chs.length?sv.c:0;openChapter(ci,sv?sv.s:0);
+ try{if('mediaSession' in navigator&&window.MediaMetadata){navigator.mediaSession.metadata=new MediaMetadata({title:title||'LECTOR'});const h={play:()=>{if(!playing)$('play').click()},pause:()=>{if(playing)$('play').click()},nexttrack:()=>go(1),previoustrack:()=>go(-1)};for(const a in h){try{navigator.mediaSession.setActionHandler(a,h[a])}catch(e){}}}}catch(e){}
+ if(!skipSave&&DB.db)DB.saveBook(key,(title||'Fără titlu').slice(0,120),chs,Date.now()).then(async r=>{await renderLib();if(r===null)$('libnote').textContent='Cartea nu a putut fi salvată în bibliotecă (spațiu insuficient sau stocare blocată).'})}
+function openChapter(i,s){s=s||0;stop();pFlush();ci=i;$('chs').value=i;sents=split(chapters[i].text);si=Math.min(s,Math.max(0,sents.length-1));const b=$('book');b.innerHTML='';b.classList.toggle('big',sents.length>300);
+ const h=document.createElement('div');h.className='ch';h.textContent=chapters[i].title;b.appendChild(h);let p=document.createElement('p');b.appendChild(p);
+ sents.forEach((x,k)=>{const sp=document.createElement('span');sp.className='s';sp.textContent=x.t+' ';sp.id='s'+k;sp.tabIndex=-1;sp.setAttribute('role','button');sp.onclick=()=>{si=k;mark();if(playing)restart();else savePos()};p.appendChild(sp);if(x.np&&k<sents.length-1){p=document.createElement('p');b.appendChild(p)}});
+ mark();b.scrollTop=0;mark()}
+function hlWord(k,idx,len){const el=$('s'+k);if(!el||!sents[k]||typeof idx!=='number')return;const t=sents[k].t;let end=len?idx+len:t.indexOf(' ',idx);if(end<0||end<=idx)end=t.length;if(idx>=t.length)return;
+ el.textContent='';el.append(document.createTextNode(t.slice(0,idx)));const w=document.createElement('span');w.className='w';w.textContent=t.slice(idx,end);el.append(w,document.createTextNode(t.slice(end)+' '))}
+function mark(){document.querySelectorAll('.s.on').forEach(e=>{e.classList.remove('on');e.tabIndex=-1;e.removeAttribute('aria-current');const k=+e.id.slice(1);if(sents[k]&&e.firstElementChild)e.textContent=sents[k].t+' '});const e=$('s'+si);if(e){e.classList.add('on');e.tabIndex=0;e.setAttribute('aria-current','true');const b=$('book');const top=tgt(e,b);const far=Math.abs(top-b.scrollTop)>b.clientHeight*3;b.scrollTo({top:Math.max(0,top),behavior:far?'auto':'smooth'});if(b.classList.contains('big'))fixScroll(e,far)}status()}
+/* content-visibility:auto: un span din paragraf sărit nu are casetă proprie (offsetTop nevalid) — folosim paragraful până se randează */
+function tgt(e,b){const par=e.parentElement||e,ok=e.offsetTop>=par.offsetTop-2&&e.offsetTop<=par.offsetTop+par.offsetHeight+2,el=ok?e:par;return el.offsetTop-b.clientHeight/2+el.offsetHeight/2}
+function fixScroll(e,far){const b=$('book'),th=far?.08:.35,mx=far?16:4;let n=0;const step=()=>{if(!e.isConnected||!e.classList.contains('on'))return;const t=tgt(e,b);if(Math.abs(t-b.scrollTop)>b.clientHeight*th){b.scrollTo({top:Math.max(0,t),behavior:'auto'});if(++n<mx)setTimeout(step,50)}};setTimeout(step,60)}
+function status(){const st=$('st');if(noTTS&&!usePiper()){st.textContent=NOTTS_MSG;st.className='hint warn';return}
+ st.className='hint'+(note?' warn':'');st.textContent=(chapters.length?('Capitol '+(ci+1)+'/'+chapters.length+' · propoziția '+(si+1)+'/'+sents.length+(note?' · ':'')):'')+note}
+function savePos(){if(bookKey)store.set('lector.pos.'+bookKey,JSON.stringify({c:ci,s:si}))}
+
+/* ---------- redare ---------- */
+async function lock(){try{if(navigator.wakeLock&&!wake)wake=await navigator.wakeLock.request('screen')}catch(e){wake=null}}
+function unlock(){try{wake&&wake.release()}catch(e){}wake=null}
+document.addEventListener('visibilitychange',()=>{if(playing&&!document.hidden){lock();if(IOS)setTimeout(()=>{if(playing&&!syn.speaking){tok++;try{syn.cancel()}catch(e){}setTimeout(speak,150)}},400)}else if(document.hidden&&playing&&IOS){savePos()}});
+function finishBook(){stop();ci=0;si=0;openChapter(0,0);savePos();$('st').textContent='Carte terminată.'}
+function speak(){if(!playing)return;if(!stLast)stLast=Date.now();if(usePiper())return speakPiper();
+ if(si>=sents.length){if(ci<chapters.length-1){const n=ci+1;openChapter(n,0);playing=true;$('play').textContent='⏸ Pauză';lock();setTimeout(speak,150);return}return finishBook()}
+ const my=++tok,sm=spokenMap(sents[si].t),u=new SpeechSynthesisUtterance(sm.s);const v=curVoice();if(v){u.voice=v;u.lang=v.lang}else u.lang='ro-RO';u.rate=+$('rate').value;u.pitch=+$('pitch').value;
+ let wd=null,ew=null,pl=null;const clear=()=>{clearTimeout(wd);clearTimeout(ew);clearInterval(pl)};
+ u.onstart=()=>{retries=0;clearTimeout(wd);if(IOS){let miss=0;pl=setInterval(()=>{if(my!==tok){clearInterval(pl);return}if(!syn.speaking&&!syn.pending){if(++miss>=3){clearInterval(pl);u.onend&&u.onend()}}else miss=0},500)}};
+ u.onboundary=e=>{if(my!==tok||(e.name&&e.name!=='word'))return;if(sm.segs&&sm.segs.length){const r=mapIdx(sm.segs,e.charIndex,e.charLength);hlWord(si,r[0],r[1])}else hlWord(si,e.charIndex,e.charLength)};
+ u.onend=()=>{clear();if(my!==tok)return;errs=0;si++;stTick(true);mark();savePos();speak()};
+ u.onerror=e=>{clear();if(my!==tok||e.error==='interrupted'||e.error==='canceled')return;errs++;if(errs>=3){stop();$('st').textContent='Sinteza vocală a eșuat ('+(e.error||'eroare')+'). Verifică vocea aleasă sau apasă Citește din nou.';return}si++;speak()};
+ /* watchdog 1: enunțul nu pornește (Chrome ignoră uneori speak() imediat după cancel()) */
+ wd=setTimeout(()=>{if(my!==tok)return;if(++retries>2){stop();$('st').textContent='Vocea nu pornește. '+(IOS?'Pe iPhone/iPad, Safari cere uneori o atingere nouă: apasă Citește din nou. ':'')+'Alege altă voce sau reîncarcă pagina, apoi apasă Citește.';return}tok++;syn.cancel();setTimeout(speak,200)},4000);
+ /* watchdog 2: enunțul pornește dar onend nu mai vine */
+ ew=setTimeout(()=>{if(my!==tok)return;tok++;syn.cancel();si++;mark();savePos();setTimeout(speak,100)},Math.max(12000,sents[si].t.length*140/Math.max(.5,u.rate)+6000));
+ mark();syn.speak(u)}
+function stop(){if(stLast)stTick(false,true);playing=false;tok++;errs=0;retries=0;syn.cancel();try{PA&&PA.pause()}catch(e){}$('play').textContent='▶ Citește';unlock()}
+function restart(){if(playing){tok++;syn.cancel();try{if(PA){PA.pause();PA.dataset.key=''}}catch(e){}setTimeout(speak,120)}}
+$('play').onclick=()=>{if(noTTS&&!usePiper()){status();return}if(!chapters.length)return;if(playing){stop();savePos()}else{if(si>=sents.length)si=0;playing=true;stLast=Date.now();$('play').textContent='⏸ Pauză';lock();speak()}};
+function go(d){if(!chapters.length)return;const w=playing;let n=si+d;
+ if(n<0){if(ci>0){openChapter(ci-1,1e9);n=sents.length-1}else n=0}else if(n>=sents.length){if(ci<chapters.length-1){openChapter(ci+1,0);n=0}else n=sents.length-1}
+ si=n;mark();savePos();if(w){playing=true;$('play').textContent='⏸ Pauză';restart()}}
+$('prev').onclick=()=>go(-1);$('next').onclick=()=>go(1);
+$('chs').onchange=()=>{const w=playing;openChapter(+$('chs').value,0);savePos();if(w){playing=true;$('play').textContent='⏸ Pauză';lock();setTimeout(speak,150)}};
+$('sleep').onchange=()=>{clearTimeout(sleepT);const m=+$('sleep').value;if(m)sleepT=setTimeout(()=>{stop();savePos();$('sleep').value=0;$('st').textContent='Oprit de temporizator.'},m*60000)};
+addEventListener('keydown',e=>{const t=e.target.tagName;if(/INPUT|TEXTAREA|SELECT/.test(t))return;
+ if(t==='SPAN'&&e.target.classList.contains('s')&&(e.code==='Enter'||e.code==='Space')){e.preventDefault();e.target.click();if(!playing)$('play').click();return}
+ if(e.code==='Space'){if(t==='BUTTON')return;e.preventDefault();$('play').click()}else if(e.code==='ArrowRight')go(1);else if(e.code==='ArrowLeft')go(-1)});
+addEventListener('pagehide',()=>{savePos();syn.cancel()});
+
+/* ---------- încărcare fișiere ---------- */
+const hash=s=>{const m=s.length>>1;const x=s.slice(0,2000)+s.slice(m,m+2000)+s.slice(-2000);let h=0;for(let i=0;i<x.length;i++)h=(h*31+x.charCodeAt(i))|0;return String(h)+'.'+s.length};
+function html2text(h){const d=new DOMParser().parseFromString(h,'text/html');d.querySelectorAll('script,style,nav,head').forEach(x=>x.remove());
+ d.querySelectorAll('p,div,h1,h2,h3,h4,h5,h6,li,tr,blockquote').forEach(x=>x.append('\n\n'));d.querySelectorAll('br').forEach(x=>x.replaceWith('\n'));
+ return (d.body?d.body.textContent:'').replace(/[ \t ]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim()}
+function autoChapters(text,name){text=text.replace(/\r/g,'');
+ const parts=text.split(/\n(?=[ \t]*(?:capitolul|capitol|chapter|partea|cap\.)[ \t]+[\dIVXLC]+\b[^\n]{0,60}\n)/i).map(p=>p.trim()).filter(Boolean);
+ if(parts.length>1)return parts.map((p,i)=>({title:p.split('\n')[0].slice(0,70)||('Partea '+(i+1)),text:p}));
+ const out=[],L=text.split('\n');let cur=[],n=0,len=0;for(const l of L){cur.push(l);len+=l.length+1;if(len>15000&&(l.trim()===''||len>30000)){out.push({title:'Partea '+(++n),text:cur.join('\n')});cur=[];len=0}}
+ if(cur.join('').trim())out.push({title:out.length?'Partea '+(++n):name,text:cur.join('\n')});return out}
+async function readText(f){const buf=await f.arrayBuffer();let t=new TextDecoder('utf-8').decode(buf);if(t.includes('�')){try{t=new TextDecoder('windows-1250').decode(buf)}catch(e){}}return t.replace(/^﻿/,'')}
+async function inflate(u8){if(typeof DecompressionStream==='undefined')throw 'browserul nu poate decomprima EPUB/DOCX; actualizează-l sau folosește .txt';const ds=new DecompressionStream('deflate-raw');const w=ds.writable.getWriter();w.write(u8).catch(()=>{});w.close().catch(()=>{});
+ const rd=ds.readable.getReader(),parts=[];let n=0;const MAXZ=150*1048576;for(;;){const{done,value}=await rd.read();if(done)break;n+=value.length;if(n>MAXZ){try{await rd.cancel()}catch(e){}throw 'arhiva se extinde la peste 150 MB la decomprimare (fișier corupt sau rău intenționat)'}parts.push(value)}
+ const o=new Uint8Array(n);let p=0;for(const x of parts){o.set(x,p);p+=x.length}return o}
+async function unzip(buf){const dv=new DataView(buf),u8=new Uint8Array(buf);let e=u8.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw 'nu este un arhiv ZIP valid (EPUB/DOCX)';const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const files={};const dec=new TextDecoder();
+ for(let i=0;i<n;i++){if(dv.getUint32(p,true)!==0x02014b50)break;const flag=dv.getUint16(p+8,true),method=dv.getUint16(p+10,true),csz=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),el=dv.getUint16(p+30,true),cl=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);const name=dec.decode(u8.subarray(p+46,p+46+nl));p+=46+nl+el+cl;
+  files[name]={enc:!!(flag&1),get:async()=>{const lnl=dv.getUint16(off+26,true),lel=dv.getUint16(off+28,true),ds=off+30+lnl+lel;const raw=u8.subarray(ds,ds+csz);if(method===0)return raw;if(method===8)return await inflate(raw);throw 'compresie neacceptată'}}}return files}
+function resolve(base,rel){const parts=(base+rel).split('/');const out=[];for(const s of parts){if(s==='..')out.pop();else if(s!=='.'&&s!=='')out.push(s)}return out.join('/')}
+async function loadEpub(buf,name){const z=await unzip(buf),dec=new TextDecoder(),rd=async n=>{const f=z[n];if(!f||f.enc)return'';try{return dec.decode(await f.get())}catch(e){if(typeof e==='string')throw e;return''}};
+ const cont=await rd('META-INF/container.xml');const opfPath=(cont.match(/full-path="([^"]+)"/)||[])[1];if(!opfPath)throw 'EPUB fără container valid (posibil protejat DRM)';
+ const opf=await rd(opfPath);const dir=opfPath.includes('/')?opfPath.slice(0,opfPath.lastIndexOf('/')+1):'';
+ const man={};[...opf.matchAll(/<item\b[^>]*>/g)].forEach(m=>{const id=(m[0].match(/\bid="([^"]+)"/)||[])[1],hr=(m[0].match(/href="([^"]+)"/)||[])[1];if(id&&hr)man[id]=hr});
+ const spine=[...opf.matchAll(/<itemref\b[^>]*idref="([^"]+)"/g)].map(m=>man[m[1]]).filter(Boolean);const chs=[];let k=0;
+ for(const hr of spine){let path;try{path=resolve(dir,decodeURIComponent(hr.split('#')[0]))}catch(e){path=resolve(dir,hr.split('#')[0])}const h=await rd(path);if(!h)continue;
+  const d=new DOMParser().parseFromString(h,'text/html');const t=html2text(h);if(t.length<40)continue;const hd=d.querySelector('h1,h2,h3')||d.querySelector('title');
+  const ttl=((hd&&hd.textContent.replace(/\s+/g,' ').trim())||'');chs.push({title:(ttl||('Secțiunea '+(++k))).slice(0,70),text:t})}
+ const title=((opf.match(/<dc:title[^>]*>([^<]+)</)||[])[1])||name;return{chs,title}}
+async function loadDocx(buf,name){const z=await unzip(buf);const f=z['word/document.xml'];if(!f)throw 'nu este un document Word valid (.docx)';
+ const xml=new TextDecoder().decode(await f.get());const d=new DOMParser().parseFromString(xml,'application/xml');if(d.getElementsByTagName('parsererror').length)throw 'documentul Word nu a putut fi interpretat';
+ const W='http://schemas.openxmlformats.org/wordprocessingml/2006/main';const chs=[];let cur=null;const all=[];
+ for(const p of d.getElementsByTagNameNS(W,'p')){let t='';for(const n of p.getElementsByTagNameNS(W,'*')){const ln=n.localName;if(ln==='t')t+=n.textContent;else if(ln==='tab')t+=' ';else if(ln==='br')t+='\n'}
+  t=t.replace(/[ \t ]+/g,' ').trim();if(!t)continue;all.push(t);
+  const st=p.getElementsByTagNameNS(W,'pStyle')[0];const sv=st?(st.getAttributeNS(W,'val')||st.getAttribute('w:val')||''):'';
+  if(/^(heading|titlu)\s*1$/i.test(sv)){cur={title:t.slice(0,70),text:''};chs.push(cur)}else{if(!cur){cur={title:name,text:''};chs.push(cur)}cur.text+=t+'\n\n'}}
+ if(chs.length<2)return autoChapters(all.join('\n\n'),name);return chs.filter(c=>c.text.trim())}
+/* ---------- PDF (pdf.js încărcat la cerere de pe CDN) ---------- */
+const PDFJS_V='4.10.38';
+async function getPdfjs(){if(window.__pdfjs)return window.__pdfjs;const base='https://cdn.jsdelivr.net/npm/pdfjs-dist@'+PDFJS_V+'/legacy/build/';
+ const mainCode=await verifiedText(base+'pdf.min.mjs',"sha384-z/XbAtvhBXJoK+yvYimnFuTCF6/2wTCDSIFD09/HtIfwFtvDKOMdAe5Z3wOChkmW");const code=await verifiedText(base+'pdf.worker.min.mjs',"sha384-vbNBYP03jHFPlgtK4qSXtazEmGfmpTWlSsfq9OiU20MroW/Q9TbaEXiM7PpeWg+6");
+ let lib;try{lib=await import(URL.createObjectURL(new Blob([mainCode],{type:'text/javascript'})))}catch(e){lib=await import(base+'pdf.min.mjs')}
+ lib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));window.__pdfjs=lib;return lib}
+function pageLines(items){const lines=[];let cur='';for(const it of items){if(typeof it.str!=='string')continue;cur+=it.str;if(it.hasEOL){lines.push(cur);cur=''}}if(cur)lines.push(cur);return lines.map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean)}
+function pdfToText(pages){
+ const key=l=>l.toLowerCase().replace(/\d+/g,'#');const freq={};
+ for(const pg of pages){const seen=new Set();for(const l of pg){if(l.length<70){const k=key(l);if(!seen.has(k)){seen.add(k);freq[k]=(freq[k]||0)+1}}}}
+ const rep=k=>pages.length>=4&&freq[k]>=Math.ceil(pages.length*0.4);
+ const pageNo=/^(pagina\s+|pag\.\s*)?\d{1,4}(\s*\/\s*\d{1,4})?$|^-\s*\d+\s*-$/i;
+ let out='';
+ for(const pg of pages){const ls=pg.filter(l=>!pageNo.test(l)&&!(l.length<70&&rep(key(l))));if(!ls.length)continue;
+  const maxLen=Math.max(...ls.map(l=>l.length));let page='';
+  ls.forEach((l,i)=>{if(!page)page=l;else if(/[A-Za-zĂÂÎȘȚăâîșțşţ]-$/.test(page)&&/^[a-zăâîșțşţ]/.test(l))page=page.slice(0,-1)+l;else page+=' '+l;
+   if(l.length<0.6*maxLen&&/[.!?…»”"]$/.test(l)&&i<ls.length-1)page+='\n\n'});
+  if(out){out+=/[.!?…»”"]\s*$/.test(out)?'\n\n':' '}out+=page.trim()}
+ return out.replace(/ *\n\n */g,'\n\n').trim()}
+async function extractPdf(lib,data,onprog,pgStr){const doc=await lib.getDocument({data}).promise;const pages=[];const list=pageList(doc.numPages,pgStr);
+ for(let q=0;q<list.length;q++){const pg=await doc.getPage(list[q]);const tc=await pg.getTextContent();pages.push(pageLines(tc.items));if(onprog)onprog(q+1,list.length)}
+ return pdfToText(pages)}
+
+/* ---------- export audio cu voce neurală Piper (experimental) ---------- */
+function wavInfo(u8){const dv=new DataView(u8.buffer,u8.byteOffset,u8.byteLength);let p=12,fmt=null,data=null;while(p+8<=u8.length){const id=String.fromCharCode(u8[p],u8[p+1],u8[p+2],u8[p+3]);let sz=dv.getUint32(p+4,true);if(id==='fmt '){fmt={tag:dv.getUint16(p+8,true),ch:dv.getUint16(p+10,true),rate:dv.getUint32(p+12,true),bits:dv.getUint16(p+22,true)}}else if(id==='data'){if(p+8+sz>u8.length)sz=u8.length-p-8;data=u8.subarray(p+8,p+8+sz);break}p+=8+sz+(sz&1)}if(!fmt||!data)throw new Error('WAV nevalid');return{fmt,data}}
+function joinWav(parts,gap){const infos=parts.map(wavInfo);const f=infos[0].fmt;if(f.tag!==1||f.bits!==16)throw new Error('format WAV neașteptat de la vocea neurală');
+ const sil=new Uint8Array(Math.round(f.rate*gap)*f.ch*2);let len=0;infos.forEach((x,i)=>{len+=x.data.length+(i<infos.length-1?sil.length:0)});
+ const out=new Uint8Array(44+len);const dv=new DataView(out.buffer);const w4=(o,s)=>{for(let i=0;i<4;i++)out[o+i]=s.charCodeAt(i)};
+ w4(0,'RIFF');dv.setUint32(4,36+len,true);w4(8,'WAVE');w4(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,f.ch,true);dv.setUint32(24,f.rate,true);dv.setUint32(28,f.rate*f.ch*2,true);dv.setUint16(32,f.ch*2,true);dv.setUint16(34,16,true);w4(36,'data');dv.setUint32(40,len,true);
+ let o=44;infos.forEach((x,i)=>{out.set(x.data,o);o+=x.data.length;if(i<infos.length-1){out.set(sil,o);o+=sil.length}});return out}
+let tts=null,exporting=false;
+async function getTTS(){if(!tts)tts=await import('https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.5/+esm');return tts}
+async function piperWav(text,onp){const t=await getTTS();const wav=await t.predict({text,voiceId:PIPER_VOICE},onp);return new Uint8Array(await wav.arrayBuffer())}
+async function exportAudio(){if(IOS){$('st').textContent='Exportul audio neural nu e disponibil pe iPhone/iPad (Safari nu oferă spațiul de stocare necesar modelului vocal). Folosește un computer.';return}if(!chapters.length||exporting)return;stop();exporting=true;const btn=$('wavexp');btn.disabled=true;
+ try{const st=$('st');st.textContent='Se încarcă motorul de voce neurală (internet, o singură dată)…';
+  await getTTS();
+  const items=split(chapters[ci].text);if(!items.length)throw new Error('capitolul nu are text');const parts=[];
+  for(let i=0;i<items.length;i++){const wav=await piperWav(spokenMap(items[i].t).s,p=>{if(p&&p.total)st.textContent='Se descarcă vocea (o singură dată)… '+Math.round(p.loaded*100/p.total)+'%'});
+   parts.push(wav);st.textContent='Se sintetizează… '+Math.round((i+1)/items.length*100)+'% (propoziția '+(i+1)+'/'+items.length+')';if(i%2===0)await new Promise(r=>setTimeout(r,0))}
+  const blob=new Blob([joinWav(parts,0.35)],{type:'audio/wav'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(chapters[ci].title||'capitol').replace(/[^\p{L}\p{N}]+/gu,'-').slice(0,50)+'.wav';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),60000);
+  st.textContent='Gata: fișier WAV descărcat ('+(blob.size/1048576).toFixed(1)+' MB).'}
+ catch(err){$('st').textContent='Exportul audio a eșuat: '+(err&&err.message||err)+'. Funcția e experimentală și cere internet la prima folosire.'}
+ finally{exporting=false;btn.disabled=false}}
+$('wavexp').onclick=exportAudio;
+
+let loadTok=0;
+$('file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const my=++loadTok;$('st').textContent='Se încarcă '+f.name+'…';const base=f.name.replace(/\.[^.]+$/,'');
+ try{if(/\.pdf$/i.test(f.name)){$('st').textContent='Se încarcă pdf.js (necesită internet o singură dată)…';let lib;try{lib=await getPdfjs()}catch(e){throw 'nu am putut încărca pdf.js (fără internet?). Salvează PDF-ul ca DOCX sau TXT'}
+  let text='';const force=$('ocrforce').checked,pgStr=$('pgrange').value;if(!force){try{text=await extractPdf(lib,new Uint8Array(await f.arrayBuffer()),(q,n)=>{if(my===loadTok)$('st').textContent='Se citește PDF-ul… pagina '+q+'/'+n},pgStr)}catch(e){throw (e&&e.name==='PasswordException')?'PDF-ul este protejat cu parolă':(e&&e.message||e)}}
+  if(my!==loadTok)return;if(force||text.trim().length<20){$('st').textContent=(force?'OCR forțat':'PDF scanat')+': pornesc OCR în română (descarcă ~15 MB prima dată, necesită internet)…';try{text=await ocrPdf(lib,new Uint8Array(await f.arrayBuffer()),(q,n,cut)=>{if(my===loadTok)$('st').textContent='OCR… pagina '+q+'/'+n+(cut?' (doar primele '+OCRMAX+' pagini din interval)':'')},pgStr)}catch(e){throw 'PDF scanat; OCR a eșuat: '+(e&&e.message||e)}if(my!==loadTok)return;if(text.trim().length<20)throw 'OCR nu a găsit text în PDF'}setBook(autoChapters(text,base),'pdf.'+hash(text),base)}
+  else 
+  if(/\.epub$/i.test(f.name)){const r=await loadEpub(await f.arrayBuffer(),f.name);if(my!==loadTok)return;if(!r.chs.length)throw 'nu s-a găsit text (EPUB gol sau cu DRM)';setBook(r.chs,'epub.'+hash(r.title+r.chs.map(c=>c.text.length).join(',')+r.chs[0].text),r.title)}
+  else if(/\.docx$/i.test(f.name)){const chs=await loadDocx(await f.arrayBuffer(),base);if(my!==loadTok)return;if(!chs.length)throw 'documentul nu conține text';setBook(chs,'docx.'+hash(chs.map(c=>c.text).join('\n')),base)}
+  else{let t=await readText(f);if(my!==loadTok)return;if(/\.(x?html?)$/i.test(f.name))t=html2text(t);setBook(autoChapters(t,base),hash(t),base)}}
+ catch(err){$('st').textContent='Nu am putut citi fișierul: '+err}};
+$('load').onclick=()=>{const t=$('paste').value.trim();if(t)setBook(autoChapters(t,'Text lipit'),hash(t),'Text: '+t.replace(/\s+/g,' ').slice(0,40))};
+/* ================= v11 ================= */
+/* ---------- dicționar de pronunție (doar pentru sunet, nu pentru textul afișat) ---------- */
+const PRON_DEF=[['etc.','et cetera'],['nr.','numărul'],['str.','strada'],['pag.','pagina'],['cca.','circa'],['ș.a.m.d.','și așa mai departe'],['Sf.','Sfântul'],['dr.','doctor'],['prof.','profesor'],['ing.','inginer'],['fig.','figura'],['vol.','volumul'],['art.','articolul'],['ex.','de exemplu']];
+let PR={sig:null,v:null};
+function pronRules(){const def=$('prondef').checked,txt=$('pron').value,sig=(def?'1':'0')+'|'+txt;if(PR.sig===sig)return PR.v;
+ const m=new Map();if(def)PRON_DEF.forEach(x=>m.set(x[0].toLowerCase(),x[1]));
+ txt.split('\n').forEach(l=>{l=l.trim();if(!l||l[0]==='#')return;const i=l.indexOf('=');if(i<1)return;const a=l.slice(0,i).trim(),b=l.slice(i+1).trim();if(a)m.set(a.toLowerCase(),b)});
+ let v=null;if(m.size){const alts=[...m.keys()].sort((x,y)=>y.length-x.length).map(a=>a.replace(/[.*+?^${}()|[\]\\\/-]/g,'\\$&')+(/[\p{L}\p{N}]$/u.test(a)?'(?![\\p{L}\\p{N}])':''));
+  try{v={re:new RegExp('(^|[^\\p{L}\\p{N}])('+alts.join('|')+')','giu'),map:m}}catch(e){v=null}}
+ PR={sig,v};return v}
+function spokenMap(t){const R=pronRules();if(!R)return{s:t,segs:null};let out='',last=0;const segs=[];let m;R.re.lastIndex=0;
+ while((m=R.re.exec(t))){const st=m.index+m[1].length,en=m.index+m[0].length;const rp=R.map.get(m[2].toLowerCase());if(rp===undefined)continue;out+=t.slice(last,st);const n0=out.length;out+=rp;segs.push({o0:st,o1:en,n0,n1:out.length});last=en}
+ out+=t.slice(last);return{s:out,segs}}
+function mapIdx(segs,idx,len){let d=0;for(const g of segs){if(idx<g.n0)break;if(idx<g.n1)return[g.o0,g.o1-g.o0];d+=(g.n1-g.n0)-(g.o1-g.o0)}return[idx-d,len]}
+$('prondef').checked=store.get('lector.prondef')!=='0';$('pron').value=store.get('lector.pron')||'';
+$('prondef').onchange=()=>store.set('lector.prondef',$('prondef').checked?'1':'0');$('pron').oninput=()=>store.set('lector.pron',$('pron').value);
+
+/* ---------- statistici de lectură (local, per carte) ---------- */
+function stShow(){const e=$('stats');if(e)e.textContent=bookKey&&(ST.t>=1||ST.n)?('Ascultat în această carte: '+fmtT(ST.t)+' · '+ST.n+' propoziții citite'):''}
+function stLoad(){try{const j=JSON.parse(store.get('lector.st.'+bookKey)||'null');ST=j&&typeof j.t==='number'?{t:j.t,n:+j.n||0}:{t:0,n:0}}catch(e){ST={t:0,n:0}}stLast=0;stShow()}
+function stTick(done,ending){if(!bookKey)return;const now=Date.now();if(stLast)ST.t+=Math.min(30,(now-stLast)/1000);stLast=ending?0:now;if(done)ST.n++;store.set('lector.st.'+bookKey,JSON.stringify(ST));stShow()}
+setInterval(()=>{if(playing&&stLast)stTick(false)},5000);
+
+/* ---------- Piper „în direct”: propoziții sintetizate în avans, redate printr-un element audio ---------- */
+const PQ=new Map();let pChain=Promise.resolve(),pGen=0;
+const pKey=(c,k)=>bookKey+'#'+c+':'+k;
+function getPA(){if(!PA){PA=new Audio();PA.preload='auto';try{PA.setAttribute('playsinline','')}catch(e){}PA.dataset.key=''}return PA}
+function pRevoke(key){const e=PQ.get(key);if(!e)return;e.dead=true;if(e.url){try{URL.revokeObjectURL(e.url)}catch(x){}e.url=null}PQ.delete(key)}
+function pFlush(){pGen++;[...PQ.keys()].forEach(pRevoke);pChain=Promise.resolve();if(PA){try{PA.pause()}catch(e){}PA.dataset.key=''}}
+function pPrune(){for(const [key,e] of [...PQ]){if(e.b!==bookKey||e.c!==ci||e.k<si-1||e.k>si+4)pRevoke(key)}}
+function pGet(k){const key=pKey(ci,k);let e=PQ.get(key);if(e)return e.p;const sn=sents[k];if(!sn)return Promise.reject(new Error('propoziție lipsă'));
+ const txt=spokenMap(sn.t).s,gen=pGen;e={b:bookKey,c:ci,k,url:null,dead:false,p:null};
+ const ent=e;ent.p=pChain=pChain.catch(()=>{}).then(async()=>{if(gen!==pGen||ent.dead)throw new Error('anulat');
+  const w=await piperWav(txt,pr=>{if(pr&&pr.total&&playing)$('st').textContent='Se descarcă vocea neurală (o singură dată)… '+Math.round(pr.loaded*100/pr.total)+'%'});
+  if(gen!==pGen||ent.dead)throw new Error('anulat');ent.url=URL.createObjectURL(new Blob([w],{type:'audio/wav'}));return ent});
+ ent.p.catch(()=>{if(PQ.get(key)===ent)PQ.delete(key)});PQ.set(key,ent);return ent.p}
+function piperFail(e){const msg=(e&&e.message)||String(e);stop();const so=[...$('voice').options].find(o=>o.value!==PIPER_ID);if(so){$('voice').value=so.value;store.set('lector.voice',so.value)}voiceNote();
+ note='Vocea neurală nu a putut fi folosită ('+msg+'; cere internet la prima folosire). '+(so?'Am revenit la vocea sistemului; apasă Citește.':'Nu există altă voce pe acest dispozitiv.');status()}
+async function speakPiper(){if(!playing)return;
+ if(si>=sents.length){if(ci<chapters.length-1){const n=ci+1;openChapter(n,0);playing=true;stLast=stLast||Date.now();$('play').textContent='⏸ Pauză';lock();setTimeout(speak,150);return}return finishBook()}
+ const my=++tok,k=si,key=pKey(ci,k),a=getPA();mark();let ent=PQ.get(key);
+ if(!ent||!ent.url){if(!ent)$('st').textContent='Se sintetizează cu vocea neurală… (prima propoziție poate dura câteva secunde)';try{ent=await pGet(k)}catch(e){if(my!==tok)return;piperFail(e);return}}
+ if(my!==tok||!playing)return;
+ pPrune();for(let j=1;j<=3;j++)if(k+j<sents.length)pGet(k+j);
+ status();a.playbackRate=+$('rate').value||1;
+ if(a.dataset.key!==key){a.src=ent.url;a.dataset.key=key}else if(a.ended)a.currentTime=0;
+ a.onended=()=>{if(my!==tok)return;errs=0;si++;stTick(true);mark();savePos();speak()};
+ a.onerror=()=>{if(my!==tok)return;piperFail(new Error('redarea audio a eșuat'))};
+ a.onpause=()=>{if(my!==tok||!playing||a.ended||(a.duration&&a.currentTime>=a.duration-.05))return;tok++;if(stLast)stTick(false,true);playing=false;$('play').textContent='▶ Citește';unlock();savePos()};
+ try{await a.play()}catch(e){if(my!==tok)return;if(e&&e.name==='AbortError')return;if(e&&e.name==='NotAllowedError'){stop();$('st').textContent='Browserul a blocat redarea automată. Apasă Citește din nou.';return}piperFail(e)}}
+
+/* ---------- căutare în carte (fără diacritice și majuscule) ---------- */
+const nrm=x=>x.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+let SC={key:'',ch:[]},qTok=0,qT=null;
+function scGet(c){if(SC.key!==bookKey)SC={key:bookKey,ch:[]};let x=SC.ch[c];if(!x){const sn=split(chapters[c].text);x=SC.ch[c]={s:sn,n:sn.map(z=>nrm(z.t))}}return x}
+function jumpTo(c,k){const w=playing;if(c!==ci){openChapter(c,k);savePos();if(w){playing=true;$('play').textContent='⏸ Pauză';lock();stLast=Date.now();setTimeout(speak,150)}}else{si=Math.max(0,Math.min(k,sents.length-1));mark();savePos();if(w)restart()}
+ try{$('book').scrollIntoView({block:'nearest',behavior:RMOTION?'auto':'smooth'})}catch(e){}}
+async function doSearch(){const my=++qTok,q=nrm($('q').value.trim().replace(/\s+/g,' ')),box=$('qres');box.textContent='';$('qn').textContent='';if(q.length<2||!chapters.length)return;
+ const res=[];let total=0;
+ for(let c=0;c<chapters.length;c++){if(my!==qTok)return;const x=scGet(c);for(let k=0;k<x.n.length;k++){if(x.n[k].includes(q)){total++;if(res.length<100)res.push({c,k})}}if(c%3===2)await new Promise(r=>setTimeout(r,0))}
+ if(my!==qTok)return;$('qn').textContent=total?(total>100?'Primele 100 din '+total+' rezultate':total+(total===1?' rezultat':' rezultate')):'Niciun rezultat';
+ res.forEach(r=>{const x=scGet(r.c),t=x.s[r.k].t,i=Math.max(0,x.n[r.k].indexOf(q)-40),b=document.createElement('button');b.className='qr';b.textContent='Cap. '+(r.c+1)+' · '+(i>0?'…':'')+t.slice(i,i+120)+(t.length>i+120?'…':'');b.onclick=()=>jumpTo(r.c,r.k);box.appendChild(b)})}
+$('q').oninput=()=>{clearTimeout(qT);qT=setTimeout(doSearch,250)};
+$('q').onkeydown=e=>{if(e.key==='Enter'){clearTimeout(qT);doSearch()}};
+
+/* ---------- teme și font pentru dislexie ---------- */
+const THEMES={dark:'#14110d',sepia:'#f4ecd8',contrast:'#000000',light:'#ffffff'};
+function applyTheme(t){if(!THEMES[t])t='dark';const r=document.documentElement;if(t==='dark')r.removeAttribute('data-theme');else r.setAttribute('data-theme',t);$('theme').value=t;
+ try{document.querySelector('meta[name=theme-color]').setAttribute('content',THEMES[t]);document.querySelector('meta[name=color-scheme]').setAttribute('content',(t==='dark'||t==='contrast')?'dark':'light')}catch(e){}store.set('lector.theme',t)}
+$('theme').onchange=()=>applyTheme($('theme').value);applyTheme(store.get('lector.theme')||'dark');
+const setDys=on=>{document.body.classList.toggle('dys',on);$('dys').checked=on;store.set('lector.dys',on?'1':'0')};$('dys').onchange=()=>setDys($('dys').checked);setDys(store.get('lector.dys')==='1');
+
+/* ---------- mod „doar ascultare” ---------- */
+function loSync(){$('lotitle').textContent=chapters.length?chapters[ci].title:'Încarcă o carte ca să asculți';$('lost').textContent=chapters.length?('Capitol '+(ci+1)+'/'+chapters.length+' · propoziția '+(si+1)+'/'+sents.length):'';$('lplay').textContent=$('play').textContent}
+function setLo(on){document.body.classList.toggle('lo',on);$('lo').setAttribute('aria-pressed',on?'true':'false');loSync();try{if(on)$('lplay').focus()}catch(e){}}
+$('lo').onclick=()=>setLo(!document.body.classList.contains('lo'));$('lexit').onclick=()=>setLo(false);
+$('lplay').onclick=()=>$('play').click();$('lprev').onclick=()=>$('prev').click();$('lnext').onclick=()=>$('next').click();
+try{new MutationObserver(loSync).observe($('play'),{childList:true,characterData:true,subtree:true})}catch(e){}
+{const _st=status;status=function(){_st.apply(this,arguments);loSync()}}
+{const _sb=setBook;setBook=function(){const r=_sb.apply(this,arguments);stLoad();SC={key:'',ch:[]};$('qres').textContent='';$('qn').textContent='';loSync();return r}}
+document.querySelectorAll('label').forEach(l=>{const n=l.nextElementSibling;if(n&&n.id&&!l.htmlFor&&!l.querySelector('input,select,textarea'))l.htmlFor=n.id});
+status();
+
+$('supp').onclick=async()=>{const f=[];try{f.push('VideoEncoder:'+(typeof VideoEncoder!=='undefined'),'AudioEncoder:'+(typeof AudioEncoder!=='undefined'),'MediaRecorder:'+(typeof MediaRecorder!=='undefined'),'speechSynthesis:'+(typeof speechSynthesis!=='undefined'),'indexedDB:'+(typeof indexedDB!=='undefined'),'webgpu:'+!!navigator.gpu,'DecompressionStream:'+(typeof DecompressionStream!=='undefined'))}catch(e){}
+ const t=['Aplicație: '+document.title,'Versiune: '+APPV,'Browser: '+navigator.userAgent,'Ecran: '+screen.width+'x'+screen.height+' @'+(window.devicePixelRatio||1),'Funcții: '+f.join(' '),'Ultimele erori: '+(__errs.slice(-10).join(' | ')||'niciuna')].join('\n');
+ let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch(e){}
+ if(!ok){let ta=document.getElementById('supptxt');if(!ta){ta=document.createElement('textarea');ta.id='supptxt';ta.setAttribute('aria-label','Detalii pentru suport');ta.style.cssText='width:100%;height:9em';document.querySelector('.foot').after(ta)}ta.value=t;ta.focus();ta.select();try{ok=document.execCommand('copy')}catch(e){}}
+ const b=$('supp');const o=b.textContent;b.textContent=ok?'✓ Copiat':'Copiază manual textul de mai sus';setTimeout(()=>b.textContent=o,2500)};
+try{if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol))navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}
+/* ---------- traducere RO/EN (dicționar + observator; textele noi se traduc automat) ---------- */
+const I18N={"exact": {"LECTOR": "LECTOR", "cărți citite cu voce tare — cu vocile locale ale dispozitivului, fără cont": "books read aloud — with your device's local voices, no account", "Alege o carte": "Choose a book", ".epub, .docx, .pdf, .txt, .html sau lipește textul mai jos (PDF: la prima folosire se încarcă pdf.js de pe internet; PDF-urile scanate trec automat prin OCR)": ".epub, .docx, .pdf, .txt, .html or paste the text below (PDF: on first use pdf.js is loaded from the internet; scanned PDFs go through OCR automatically)", "Citește PDF-ul prin OCR chiar dacă are text": "Read the PDF through OCR even if it has text", "Pagini PDF": "PDF pages", "ex. 1-50 sau 3,7,10-12": "e.g. 1-50 or 3,7,10-12", "…sau lipește aici textul și apasă «Încarcă text»": "…or paste the text here and press «Load text»", "Text de citit": "Text to read", "Încarcă text": "Load text", "Capitol": "Chapter", "Salvează poziția curentă": "Save the current position", "🔖 Semn": "🔖 Bookmark", "Semne de carte": "Bookmarks", "Experimental: voce neurală românească (Piper), descărcată de pe internet la prima folosire": "Experimental: Romanian neural voice (Piper), downloaded from the internet on first use", "⬇ Capitol ca audio WAV (experimental)": "⬇ Chapter as WAV audio (experimental)", "Biblioteca": "Library", "⬇ Copie de rezervă bibliotecă": "⬇ Library backup", "⬆ Importă copia": "⬆ Import backup", "Caută în carte (fără diacritice, fără majuscule)": "Search the book (diacritics and case ignored)", "Caută în carte": "Search the book", "Setări: temă, font, pronunție": "Settings: theme, font, pronunciation", "Temă": "Theme", "Întunecat": "Dark", "Sepia": "Sepia", "Contrast ridicat": "High contrast", "Alb": "White", "Font pentru dislexie": "Dyslexia-friendly font", "Citește corect abrevierile românești (etc., nr., str., pag., cca., ș.a.m.d., Sf., dr., prof., ing., fig., vol., art., ex.)": "Read Romanian abbreviations correctly (etc., nr., str., pag., cca., ș.a.m.d., Sf., dr., prof., ing., fig., vol., art., ex.)", "Înlocuiri proprii, câte una pe linie: abreviere=cum se citește\nEx:\nASFAN=asfan\nCNRED=ce ene er e de": "Custom replacements, one per line: abbreviation=how it is read\nE.g.:\nASFAN=asfan\nCNRED=ce ene er e de", "Înlocuiri de pronunție": "Pronunciation replacements", "Înlocuirile se aplică doar sunetului, nu textului afișat. „Sf.” se citește „Sfântul” (la feminin adaugă tu o linie, ex. Sf. Maria=Sfânta Maria). Se salvează automat.": "Replacements apply only to the sound, not to the displayed text. “Sf.” is read as “Sfântul” (for feminine, add a line yourself, e.g. Sf. Maria=Sfânta Maria). Saved automatically.", "Încarcă o carte ca să începi.": "Load a book to get started.", "Doar ascultare": "Listen only", "Propoziția anterioară": "Previous sentence", "⏮": "⏮", "▶ Citește": "▶ Read", "Propoziția următoare": "Next sentence", "⏭": "⏭", "Arată textul": "Show text", "Propoziția anterioară (←)": "Previous sentence (←)", "Propoziția următoare (→)": "Next sentence (→)", "Voce": "Voice", "Viteză": "Speed", "Ton": "Pitch", "Temporizator de oprire": "Sleep timer", "Fără oprire": "No timer", "Oprește în 15 min": "Stop in 15 min", "30 min": "30 min", "60 min": "60 min", "Doar ascultare: ascunde textul": "Listen only: hide the text", "🎧": "🎧", "Text mai mic": "Smaller text", "A−": "A−", "Text mai mare": "Larger text", "A+": "A+", "🛟 Copiază detalii pentru suport": "🛟 Copy details for support", "LECTOR — cărți citite cu voce tare": "LECTOR — books read aloud"}, "frag": [["Ai deschis fișierul local. Safari pe iPhone/iPad nu rulează corect pagini deschise din aplicația Fișiere: încarcă LECTOR.html pe un site HTTPS (ex. serverul tău) și deschide-l de acolo, apoi „Adaugă pe ecranul principal”.", "You opened the local file. Safari on iPhone/iPad does not run pages opened from the Files app correctly: upload LECTOR.html to an HTTPS site (e.g. your own server) and open it from there, then “Add to Home Screen”."], ["iPhone/iPad: ține ecranul aprins și aplicația în prim-plan, altfel Safari oprește vocea; la revenire citirea reia singură. Pentru voce românească: Setări › Accesibilitate › Conținut vorbit › Voci › Română (Ioana).", "iPhone/iPad: keep the screen on and the app in the foreground, otherwise Safari stops the voice; reading resumes on its own when you return. For a Romanian voice: Settings › Accessibility › Spoken Content › Voices › Romanian (Ioana)."], ["Acest browser sau acest mod de previzualizare nu oferă sinteză vocală. Deschide fișierul direct în Chrome, Edge, Safari sau Firefox (dublu clic pe LECTOR.html).", "This browser or preview mode does not offer speech synthesis. Open the file directly in Chrome, Edge, Safari or Firefox (double-click LECTOR.html)."], ["Exportul audio neural nu e disponibil pe iPhone/iPad (Safari nu oferă spațiul de stocare necesar modelului vocal). Folosește un computer.", "Neural audio export is not available on iPhone/iPad (Safari does not provide the storage the voice model needs). Use a computer."], ["Vocea aleasă folosește internetul și poate fi mai puțin stabilă; alege una marcată „locală” pentru citire offline.", "The chosen voice uses the internet and may be less stable; pick one marked “local” for offline reading."], ["Nu există nicio voce în română pe acest dispozitiv — textul românesc va suna greșit. ", "There is no Romanian voice on this device — Romanian text will sound wrong. "], ["arhiva se extinde la peste 150 MB la decomprimare (fișier corupt sau rău intenționat)", "the archive expands to over 150 MB when decompressed (corrupt or malicious file)"], ["Cartea nu a putut fi salvată în bibliotecă (spațiu insuficient sau stocare blocată).", "The book could not be saved to the library (not enough space or storage blocked)."], ["Nu s-au găsit voci. Instalează o voce din setările sistemului (Text-to-speech).", "No voices found. Install a voice from the system settings (Text-to-speech)."], ["Se sintetizează cu vocea neurală… (prima propoziție poate dura câteva secunde)", "Synthesizing with the neural voice… (the first sentence may take a few seconds)"], ["nu am putut încărca pdf.js (fără internet?). Salvează PDF-ul ca DOCX sau TXT", "could not load pdf.js (no internet?). Save the PDF as DOCX or TXT"], ["Pe iPhone/iPad, Safari cere uneori o atingere nouă: apasă Citește din nou. ", "On iPhone/iPad, Safari sometimes needs a new tap: press Read again. "], ["Pe iPhone/iPad: Setări › Accesibilitate › Conținut vorbit › Voci › Română.", "On iPhone/iPad: Settings › Accessibility › Spoken Content › Voices › Romanian."], ["browserul nu poate decomprima EPUB/DOCX; actualizează-l sau folosește .txt", "the browser cannot decompress EPUB/DOCX; update it or use .txt"], [": pornesc OCR în română (descarcă ~15 MB prima dată, necesită internet)…", ": starting OCR in Romanian (downloads ~15 MB the first time, needs internet)…"], ["nu am putut încărca modulul OCR (fără internet sau amprentă diferită)", "could not load the OCR module (no internet or different fingerprint)"], ["Biblioteca nu e disponibilă (stocarea e blocată în acest browser).", "The library is unavailable (storage is blocked in this browser)."], ["Se încarcă motorul de voce neurală (internet, o singură dată)…", "Loading the neural voice engine (internet, one time only)…"], ["Browserul a blocat redarea automată. Apasă Citește din nou.", "The browser blocked automatic playback. Press Read again."], ["Biblioteca externă are altă amprentă decât cea așteptată (", "The external library has a different fingerprint than expected ("], ["Alege altă voce sau reîncarcă pagina, apoi apasă Citește.", "Choose another voice or reload the page, then press Read."], ["interval de pagini invalid (exemple: 1-50 sau 3,7,10-12)", "invalid page range (examples: 1-50 or 3,7,10-12)"], ["Piper ro_RO mihai (neural, descărcare ~60 MB prima dată)", "Piper ro_RO mihai (neural, ~60 MB download the first time)"], ["Se încarcă pdf.js (necesită internet o singură dată)…", "Loading pdf.js (needs internet one time only)…"], ["). Poate fi o versiune modificată. Continui oricum?", "). It may be a modified version. Continue anyway?"], ["). Verifică vocea aleasă sau apasă Citește din nou.", ". Check the chosen voice or press Read again."], ["intervalul de pagini e în afara documentului (are ", "the page range is outside the document (it has "], ["EPUB fără container valid (posibil protejat DRM)", "EPUB without a valid container (possibly DRM-protected)"], ["capitolele nu au putut fi citite din bibliotecă", "the chapters could not be read from the library"], ["Am revenit la vocea sistemului; apasă Citește.", "I switched back to the system voice; press Read."], ["Fișierul nu conține text care poate fi citit.", "The file contains no readable text."], ["Se descarcă vocea neurală (o singură dată)… ", "Downloading the neural voice (one time only)… "], ["format WAV neașteptat de la vocea neurală", "unexpected WAV format from the neural voice"], ["Nu există altă voce pe acest dispozitiv.", "There is no other voice on this device."], ["nu s-a găsit text (EPUB gol sau cu DRM)", "no text found (empty EPUB or DRM)"], ["spațiu insuficient sau stocare blocată", "not enough space or storage blocked"], ["nu este un arhiv ZIP valid (EPUB/DOCX)", "not a valid ZIP archive (EPUB/DOCX)"], ["nu este un document Word valid (.docx)", "not a valid Word document (.docx)"], ["Vocea neurală nu a putut fi folosită (", "The neural voice could not be used ("], ["Se descarcă vocea (o singură dată)… ", "Downloading the voice (one time only)… "], ["; cere internet la prima folosire). ", "; it needs internet the first time). "], ["Nu ai cărți salvate de exportat.", "You have no saved books to export."], ["Copiază manual textul de mai sus", "Copy the text above manually"], ["PDF-ul este protejat cu parolă", "The PDF is password-protected"], ["Nu am putut deschide cartea: ", "Could not open the book: "], ["Încarcă o carte ca să asculți", "Load a book to listen"], ["Gata: fișier WAV descărcat (", "Done: WAV file downloaded ("], ["Nu am putut citi fișierul: ", "Could not read the file: "], ["Ascultat în această carte: ", "Listened in this book: "], ["Încarcă mai întâi o carte.", "First load a book."], ["Se citește PDF-ul… pagina ", "Reading the PDF… page "], ["OCR nu a găsit text în PDF", "OCR found no text in the PDF"], ["documentul nu conține text", "the document contains no text"], ["Încă nu ai cărți salvate.", "You have no saved books yet."], ["PDF scanat; OCR a eșuat: ", "Scanned PDF; OCR failed: "], ["integritate neconfirmată", "integrity not confirmed"], ["Instalează o voce ro-RO.", "Install a ro-RO voice."], ["Sinteza vocală a eșuat (", "Speech synthesis failed ("], ["Exportul audio a eșuat: ", "Audio export failed: "], ["Oprit de temporizator.", "Stopped by the timer."], ["compresie neacceptată", "unsupported compression"], [" pagini din interval)", " pages from the range)"], ["redarea audio a eșuat", "audio playback failed"], ["Detalii pentru suport", "Details for support"], ["modulul OCR lipsește", "the OCR module is missing"], ["Vocea nu pornește. ", "The voice does not start. "], ["și așa mai departe", "și așa mai departe"], [" propoziții citite", " sentences read"], ["” din bibliotecă?", "” from the library?"], ["Se sintetizează… ", "Synthesizing… "], ["fișier prea mare", "file too large"], ["Carte terminată.", "Book finished."], ["propoziție lipsă", "missing sentence"], ["Ultimele erori: ", "Latest errors: "], ["Niciun rezultat", "No results"], ["Export eșuat: ", "Export failed: "], ["Import eșuat: ", "Import failed: "], [" · propoziția ", " · sentence "], ["% (propoziția ", "% (sentence "], ["Semn salvat.", "Bookmark saved."], ["Am importat ", "Imported "], [" — capitol ", " — chapter "], ["Se încarcă ", "Loading "], ["Aplicație: ", "Application: "], ["Fără titlu", "Untitled"], ["Secțiunea ", "Section "], ["OCR forțat", "forced OCR"], ["Text lipit", "Pasted text"], ["▶ Citește", "▶ Read"], ["Funcții: ", "Features: "], ["Ștergi „", "Delete “"], ["Șterge ", "Delete "], [" cărți.", " books."], ["⏸ Pauză", "⏸ Pause"], ["numărul", "numărul"], ["Sfântul", "Sfântul"], ["Șterge", "Delete"], ["locală", "local"]], "pat": [["^Capitol (\\d+)/(\\d+)", "Chapter $1/$2"], ["^(\\d+) rezultate?\\b", "$1 results"], ["^Controale de citire$", "Reading controls"]]};
+let LANG=(()=>{try{const v=localStorage.getItem('lang');if(v==='ro'||v==='en')return v}catch(e){}return /^ro/i.test(navigator.language||'ro')?'ro':'en'})();
+const I18NRE=I18N.pat.map(([r,t])=>[new RegExp(r),t]);
+function fragApply(y){let hit=false;for(const [ro,en] of I18N.frag){if(y.indexOf(ro)>=0){y=y.split(ro).join(en);hit=true}}return hit?y:null}
+function trStr(x){if(LANG!=='en'||!x)return x;const m=x.match(/^(\s*)([\s\S]*?)(\s*)$/),core=m[2];if(!core)return x;let o=I18N.exact[core];if(o!==undefined)return m[1]+o+m[3];
+ for(const [re,t] of I18NRE){if(re.test(core)){o=core.replace(re,t);const f=fragApply(o);return m[1]+(f===null?o:f)+m[3]}}
+ const f=fragApply(x);return f===null?x:f}
+const inBook=n=>{const e=n.nodeType===3?n.parentNode:n;return !!(e&&e.closest&&e.closest('#book')&&!e.closest('.hint'))};
+const TRATTR=['placeholder','aria-label','title','alt','aria-valuetext'];let trBusy=false;
+function trNode(n){if(inBook(n))return;if(n.nodeType===3){const p=n.parentNode&&n.parentNode.nodeName;if(p==='SCRIPT'||p==='STYLE'||p==='TEXTAREA')return;if(n.__en===undefined||n.data!==n.__en){n.__ro=n.data}const t=trStr(n.__ro);n.__en=t;if(n.data!==t)n.data=t}
+ else if(n.nodeType===1){if(n.nodeName==='SCRIPT'||n.nodeName==='STYLE')return;for(const a of TRATTR){if(!n.hasAttribute(a))continue;n.__a=n.__a||{};const cur=n.getAttribute(a),st=n.__a[a];if(!st||cur!==st.en)n.__a[a]={ro:cur,en:cur};const en=trStr(n.__a[a].ro);n.__a[a].en=en;if(cur!==en)n.setAttribute(a,en)}}}
+function trAll(root){const w=document.createTreeWalker(root,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT,{acceptNode:x=>{if(x.nodeType!==1)return NodeFilter.FILTER_ACCEPT;if(x.id==='book')return NodeFilter.FILTER_SKIP;return(x.closest('#book')&&!x.closest('.hint'))?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT}});let n=w.currentNode;while(n){trNode(n);n=w.nextNode()}}
+function applyLang(){trBusy=true;try{trAll(document.body);document.documentElement.lang=LANG;const t=document.title;if(!document.__roTitle)document.__roTitle=t;document.title=trStr(document.__roTitle)}finally{trBusy=false}const b=document.getElementById('langbtn');if(b){b.textContent=LANG==='en'?'RO':'EN';b.setAttribute('aria-label',LANG==='en'?'Schimbă în română':'Switch to English')}}
+{const lb=document.createElement('button');lb.id='langbtn';lb.type='button';document.querySelector('.foot').appendChild(lb);lb.onclick=()=>{LANG=LANG==='en'?'ro':'en';try{localStorage.setItem('lang',LANG)}catch(e){}applyLang()};
+ let q=false;const mo=new MutationObserver(ms=>{if(trBusy||LANG!=='en'&&!q)return;trBusy=true;try{for(const m of ms){if(m.type==='characterData')trNode(m.target);else if(m.type==='attributes')trNode(m.target);else m.addedNodes.forEach(x=>{if(x.nodeType===3)trNode(x);else if(x.nodeType===1)trAll(x)})}}finally{trBusy=false}});
+ mo.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:TRATTR});applyLang()}
+</script>
+</body>
+</html>
