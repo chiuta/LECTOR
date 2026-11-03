@@ -227,6 +227,20 @@ const jsErrs=a=>a.filter(e=>!NET.test(e)&&!/ResizeObserver loop/.test(e));
     chk(`axe ${lab}: contrast`,!ax.some(v=>v.id==='color-contrast'),ax.filter(v=>v.id==='color-contrast'),true);
     await ctx.close()}}catch(e){chk('axe suplimentar',false,String(e).slice(0,150),true)}}
 
+  /* 14. Dialog de confirmare propriu (în loc de confirm()) */
+  {const {ctx,pg,errs}=await fresh(br,{viewport:{width:390,height:844}});await pg.goto(base);await pg.waitForTimeout(1200);
+   const has=await pg.evaluate(()=>typeof askOk==='function');chk('dialog de confirmare: askOk definit',has);
+   if(has){const exp={ro:['Anulează','Continuă'],en:['Cancel','Continue'],fr:['Annuler','Continuer'],de:['Abbrechen','Fortfahren'],es:['Cancelar','Continuar'],it:['Annulla','Continua'],hu:['Mégse','Folytatás']};
+    for(const l of LANGS){const r=await pg.evaluate(async l=>{const s=document.getElementById('langsel');s.value=l;s.dispatchEvent(new Event('change',{bubbles:true}));await new Promise(r=>setTimeout(r,250));const t=document.createElement('button');t.id='__t';document.body.appendChild(t);t.focus();
+      const p=askOk('Test?');await new Promise(r=>setTimeout(r,100));const d=document.querySelector('[role=alertdialog]');const bs=d?[...d.querySelectorAll('button')].map(b=>b.textContent):[];const foc=document.activeElement&&document.activeElement.textContent;
+      document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));const esc=await p;const back=document.activeElement&&document.activeElement.id;
+      const p2=askOk('Test?');await new Promise(r=>setTimeout(r,50));[...document.querySelectorAll('[role=alertdialog] button')][1].click();const yes=await p2;
+      const left=document.querySelectorAll('[role=alertdialog]').length;t.remove();return{bs,foc,esc,back,yes,left}},l);
+     chk('dialog '+l+': butoane traduse',JSON.stringify(r.bs)===JSON.stringify(exp[l]),r);
+     chk('dialog '+l+': Anulează are focus, Escape=false, Continuă=true, focus revine, dialogul dispare',r.foc===exp[l][0]&&r.esc===false&&r.yes===true&&r.back==='__t'&&r.left===0,r)}
+    chk('dialog: fără erori JS',jsErrs(errs).length===0,jsErrs(errs))}
+   await ctx.close()}
+
   /* 13. Memorie și scurgeri (doar Chromium) */
   if(/chromium|msedge|pixel|galaxy/.test(name)){const {ctx,pg}=await fresh(br);await pg.goto(base);await pg.waitForTimeout(1200);
    const h0=await pg.evaluate(()=>performance.memory&&performance.memory.usedJSHeapSize);

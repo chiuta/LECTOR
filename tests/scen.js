@@ -1,4 +1,6 @@
 const PHASE=window.__phase;const done=window.__done;
+// dialogul propriu de confirmare nu are cine să-l apese în teste: îl anulăm (ca vechiul confirm() închis automat)
+setInterval(()=>{const d=document.querySelector('[role=alertdialog]');if(d&&!window.__keepDlg){const b=d.querySelector('button');if(b)b.click()}},200);
 (async()=>{
  const COMMON=await (await fetch('/common.js')).text();eval(COMMON.replace(/\bconst /g,'var '));
  try{LANG='ro';applyLang()}catch(e){}
@@ -28,7 +30,7 @@ const PHASE=window.__phase;const done=window.__done;
    const wc=await verifiedText('/vendor/pdf.worker.min.mjs','sha384-vbNBYP03jHFPlgtK4qSXtazEmGfmpTWlSsfq9OiU20MroW/Q9TbaEXiM7PpeWg+6');lib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([wc],{type:'text/javascript'}));window.__pdfjs=lib;
   }catch(e){T('pdf.js prin calea verificată',false,String(e&&e.message||e))}
   // amprentă greșită trebuie să ceară confirmare
-  let asked=0;const oc=window.confirm;window.confirm=()=>{asked++;return false};try{await verifiedText('/vendor/worker.min.js','sha384-GRESIT')}catch(e){}window.confirm=oc;T('amprentă greșită: cere confirmare și refuză',asked===1,{asked});
+  let asked=0,refused=false;window.__keepDlg=true;const vp=verifiedText('/vendor/worker.min.js','sha384-GRESIT').catch(()=>{refused=true});for(let i=0;i<50&&!document.querySelector('[role=alertdialog]');i++)await sleep(100);const dl=document.querySelectorAll('[role=alertdialog]');asked=dl.length;if(dl[0])dl[0].querySelector('button').click();await vp;window.__keepDlg=false;asked=asked===1&&refused?1:asked;T('amprentă greșită: cere confirmare și refuză',asked===1,{asked});
   // PDF cu text
   await up('file','/assets/text.pdf','text.pdf','application/pdf');await waitFor(()=>chapters.some(c=>/țăranul/.test(c.text)),20000);
   const txt=chapters.map(c=>c.text).join(' ');T('PDF cu text: diacritice păstrate',/țăranul/.test(txt)&&/București/.test(txt)&&/Ștefănescu/.test(txt),txt.slice(0,120));
@@ -50,7 +52,7 @@ const PHASE=window.__phase;const done=window.__done;
   // backup roundtrip
   hookBlob();$('bkexp').click();await sleep(500);const blob=(window.__blobs||[]).filter(b=>b.type==='application/json').pop();T('copie de rezervă generată',!!blob&&blob.size>50,{size:blob&&blob.size});
   if(blob){const txt=await blob.text();const cnt=document.querySelectorAll('#lib .lib-item').length;
-   for(const b of [...document.querySelectorAll('#lib .lib-item')]){const del=[...b.querySelectorAll('button')].pop();const oc=window.confirm;window.confirm=()=>true;del.click();window.confirm=oc;await sleep(300)}
+   for(const b of [...document.querySelectorAll('#lib .lib-item')]){const del=[...b.querySelectorAll('button')].pop();window.__keepDlg=true;del.click();for(let i=0;i<30&&!document.querySelector('[role=alertdialog]');i++)await sleep(100);const dd=document.querySelector('[role=alertdialog]');if(dd)dd.querySelectorAll('button')[1].click();window.__keepDlg=false;await sleep(300)}
    T('ștergere din bibliotecă',document.querySelectorAll('#lib .lib-item').length===0,{left:document.querySelectorAll('#lib .lib-item').length});
    const f=new File([txt],'b.json',{type:'application/json'});const dt=new DataTransfer();dt.items.add(f);$('bkfile').files=dt.files;$('bkfile').dispatchEvent(new Event('change',{bubbles:true}));
    const back=await waitFor(()=>document.querySelectorAll('#lib .lib-item').length>=cnt,6000);T('import restaurează biblioteca',!!back,{before:cnt,after:document.querySelectorAll('#lib .lib-item').length,note:$('libnote').textContent})}
