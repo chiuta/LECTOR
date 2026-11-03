@@ -124,7 +124,7 @@ input[type=checkbox]{-webkit-appearance:auto;appearance:auto;width:22px;height:2
 <script>
 'use strict';
 window.__errs=[];window.addEventListener('error',e=>{try{if(/ResizeObserver loop/.test(e.message||''))return;__errs.push(String(e.message||'')+' @'+(e.lineno||'')+':'+(e.colno||''))}catch(_){}});window.addEventListener('unhandledrejection',e=>{try{__errs.push('promise: '+String(e.reason&&e.reason.message||e.reason))}catch(_){}});
-const APPV='v16';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
+const APPV='v17';const RMOTION=(()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}})();
 async function verifiedText(url,hash){const r=await fetch(url);if(!r.ok)throw new Error('HTTP '+r.status+' la '+url);const buf=await r.arrayBuffer();let ok=false;try{const d=await crypto.subtle.digest('SHA-384',buf);let b='';new Uint8Array(d).forEach(x=>b+=String.fromCharCode(x));ok=('sha384-'+btoa(b))===hash}catch(e){ok=false}
  if(!ok&&!confirm(trStr('Biblioteca externă are altă amprentă decât cea așteptată (')+url.split('/').pop()+trStr('). Poate fi o versiune modificată. Continui oricum?')))throw new Error('integritate neconfirmată');return new TextDecoder().decode(buf)}
 

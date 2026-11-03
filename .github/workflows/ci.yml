@@ -52,7 +52,7 @@ jobs:
           - { os: macos-latest, project: ipad, install: webkit, experimental: false }
           # Windows: Edge real
           - { os: windows-latest, project: msedge, install: msedge, experimental: false }
-          - { os: windows-latest, project: firefox, install: firefox, experimental: false }
+          - { os: windows-latest, project: firefox, install: firefox, experimental: true } # build Playwright fără decodor H.264
     defaults:
       run:
         working-directory: tests

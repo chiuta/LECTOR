@@ -3,7 +3,6 @@ name: Mobil (simulator iOS și emulator Android)
 on:
   push:
     branches: [main]
-  pull_request:
   schedule:
     - cron: "47 5 * * 1"
   workflow_dispatch:
