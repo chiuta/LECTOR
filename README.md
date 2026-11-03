@@ -2,9 +2,9 @@
 
 Cărți citite cu voce tare, direct în browser. Un singur fișier HTML, fără cont, fără server. Textul nu pleacă din dispozitiv.
 
-Făcut pentru ASFAN. Versiunea 11.
+Făcut pentru ASFAN. Versiunea 12.
 
-**Aplicația live (după activarea GitHub Pages):** https://chiuta.github.io/LECTOR/
+**Aplicația live:** https://lector.chiuta.ro/
 
 ## Ce face
 
@@ -14,13 +14,13 @@ Făcut pentru ASFAN. Versiunea 11.
 - **Navigare:** capitole, căutare în carte (fără diacritice), semne de carte, poziția se păstrează.
 - **Pronunție:** dicționar cu abrevieri românești implicite (etc., nr., str., pag. …) și reguli proprii, aplicate doar sunetului.
 - **Biblioteca:** în browser (IndexedDB, capitolele stocate separat), cu copie de rezervă și import. Statistici de ascultare, locale.
-- **Aspect:** teme (întunecat, sepia, contrast ridicat, alb), font pentru dislexie, interfață în română și engleză. Funcționează offline ca PWA.
+- **Aspect:** teme (întunecat, sepia, contrast ridicat, alb), font pentru dislexie, interfață în 7 limbi (RO, EN, FR, DE, ES, IT, HU). Funcționează offline ca PWA.
 - **Export:** capitol ca WAV cu voce Piper (experimental, doar pe computer).
 
 ## Instalare
 
 - **Simplu:** deschide `index.html` cu dublu clic, în Chrome, Edge, Safari sau Firefox.
-- **PWA (instalare, offline):** pune fișierele pe un site HTTPS. Pe GitHub: Settings › Pages › Deploy from a branch › `main` / `(root)`.
+- **PWA (instalare, offline):** pune fișierele pe un site HTTPS. Aici: Pages, domeniul lector.chiuta.ro.
 - **iPhone/iPad:** folosește varianta HTTPS și „Adaugă pe ecranul principal”. Pentru voce românească: Setări › Accesibilitate › Conținut vorbit › Voci › Română (Ioana).
 
 ## Limite
@@ -40,3 +40,8 @@ Testat automat: sintaxă, jsdom (46 de verificări pe bibliotecă, migrare DB, c
 ## Fișiere
 
 `index.html` (aplicația), `sw.js` (service worker), `manifest.webmanifest`, icoane.
+
+## Istoric
+
+- **v12** — audit adversarial: reguli de pronunție cu cratimă dezactivau tot dicționarul (LECTOR); semnele de carte cu stocare coruptă aruncau excepție; importul unei copii ostile bloca pagina ~15 s (acum limite: 500 cărți, 5000 capitole); titlurile cărților și ale fragmentelor nu mai pot fi alterate de traducere. Interfață în 7 limbi.
+- **v11** — funcții noi, PWA, verificare de integritate pentru bibliotecile externe.
