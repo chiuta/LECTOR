@@ -1,0 +1,132 @@
+{
+  "schema": 1,
+  "slug": "lector",
+  "name": "LECTOR — cărți citite cu voce tare",
+  "version": "12",
+  "updated": "2026-11-03",
+  "description": "",
+  "egress": [
+    {
+      "host": "*.hf.co",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "*.huggingface.co",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "cas-bridge.xethub.hf.co",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "cdn.jsdelivr.net",
+      "via": [
+        "csp:connect-src",
+        "import()",
+        "src="
+      ]
+    },
+    {
+      "host": "cdnjs.cloudflare.com",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "huggingface.co",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "tessdata.projectnaptha.com",
+      "via": [
+        "csp:connect-src"
+      ]
+    },
+    {
+      "host": "unpkg.com",
+      "via": [
+        "csp:connect-src"
+      ]
+    }
+  ],
+  "permissions": [
+    "speechSynthesis",
+    "clipboard",
+    "serviceWorker",
+    "indexedDB",
+    "localStorage",
+    "Web Crypto",
+    "WebGPU"
+  ],
+  "storageKeys": [
+    "lang",
+    "lector.lang"
+  ],
+  "sizeBytes": 327417,
+  "sha256": "01472b941b3da96696a143806967add91b40cc0653504c531bc7b1dba1c087df",
+  "csp": {
+    "present": true,
+    "directives": {
+      "object-src": "'none'",
+      "base-uri": "'none'",
+      "form-action": "'none'",
+      "connect-src": "'self' blob: data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://huggingface.co https://*.huggingface.co https://*.hf.co https://cas-bridge.xethub.hf.co https://tessdata.projectnaptha.com https://unpkg.com",
+      "frame-src": "'none'",
+      "img-src": "'self' data: blob:",
+      "media-src": "'self' blob: data:",
+      "worker-src": "'self' blob: data:"
+    },
+    "scriptInline": "nerestricționat",
+    "connect": "'self' blob: data: https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://huggingface.co https://*.huggingface.co https://*.hf.co https://cas-bridge.xethub.hf.co https://tessdata.projectnaptha.com https://unpkg.com"
+  },
+  "features": {
+    "export": true,
+    "import": true,
+    "i18n": [
+      "en",
+      "fr",
+      "it",
+      "es",
+      "pt",
+      "hu",
+      "de"
+    ],
+    "pwa": {
+      "manifest": true,
+      "serviceWorker": true
+    },
+    "modules": [
+      "core",
+      "store",
+      "dialog",
+      "label",
+      "bundle"
+    ]
+  },
+  "kit": {
+    "version": "1.4.0",
+    "modules": [
+      "core",
+      "store",
+      "dialog",
+      "label",
+      "bundle"
+    ]
+  },
+  "selfSerializing": false,
+  "cspExceptions": [
+    {
+      "rule": "no-script-src",
+      "reason": "pdf.js, motorul OCR și vocea neurală Piper se încarcă dinamic de la gazde externe, doar la cerere; script-src nu poate fi restrâns fără a le bloca. Rețeaua rămâne limitată prin connect-src."
+    }
+  ],
+  "egressNote": "Citirea cu voce tare e offline (vocile dispozitivului). Rețeaua se folosește doar la cerere: pdf.js pentru PDF, OCR pentru PDF scanat și vocea neurală Piper."
+}

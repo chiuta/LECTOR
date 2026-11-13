@@ -1,0 +1,6 @@
+{
+  "cspExceptions": [
+    {"rule": "no-script-src", "reason": "pdf.js, motorul OCR și vocea neurală Piper se încarcă dinamic de la gazde externe, doar la cerere; script-src nu poate fi restrâns fără a le bloca. Rețeaua rămâne limitată prin connect-src."}
+  ],
+  "egressNote": "Citirea cu voce tare e offline (vocile dispozitivului). Rețeaua se folosește doar la cerere: pdf.js pentru PDF, OCR pentru PDF scanat și vocea neurală Piper."
+}
