@@ -71,7 +71,7 @@
     "lector.lang"
   ],
   "sizeBytes": 327417,
-  "sha256": "01472b941b3da96696a143806967add91b40cc0653504c531bc7b1dba1c087df",
+  "sha256": "4c71a188503e9e5b3de4f647ca1e66fca20a7a82b60b73f6b672ac3f4af591b4",
   "csp": {
     "present": true,
     "directives": {
@@ -112,7 +112,7 @@
     ]
   },
   "kit": {
-    "version": "1.4.0",
+    "version": "1.5.0",
     "modules": [
       "core",
       "store",
