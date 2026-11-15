@@ -6,7 +6,7 @@ Hangosan felolvasott könyvek — az eszközöd helyi hangjaival, fiók nélkül
 
 **[Az alkalmazás megnyitása →](https://lector.chiuta.ro/)**
 
-_Verzió: 14 · Utolsó frissítés: 2026-11-15_
+_Verzió: 14.1.0 · Utolsó frissítés: 2026-11-15_
 
 ## Funkciók
 

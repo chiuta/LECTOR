@@ -6,7 +6,7 @@ Bücher, laut vorgelesen — mit den lokalen Stimmen deines Geräts, ohne Konto.
 
 **[App öffnen →](https://lector.chiuta.ro/)**
 
-_Version: 14 · Zuletzt aktualisiert: 2026-11-15_
+_Version: 14.1.0 · Zuletzt aktualisiert: 2026-11-15_
 
 ## Funktionen
 

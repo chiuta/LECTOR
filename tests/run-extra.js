@@ -34,7 +34,7 @@ const REMOVE={
 const UAS={
  'Instagram iOS':'Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/21E219 Instagram 330.0.0.20.113 (iPhone14,5; iOS 17_4; en_US; en-US; scale=3.00; 1170x2532; 570000000)',
  'Facebook Android':'Mozilla/5.0 (Linux; Android 13; SM-S908B Build/TP1A.220624.014; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.113 Mobile Safari/537.36 [FB_IAB/FB4A;FBAV/450.0.0.38.108;]',
- 'Samsung Internet':'Mozilla/5.0 (Linux; Android 14; SAMSUNG SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36',
+ 'Samsung Internet':'Mozilla/5.0 (Linux; Android 14.1.0; SAMSUNG SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36',
  'WhatsApp iOS':'WhatsApp/2.24.5.78 i'
 };
 const VIEWS=[[320,568],[360,640],[390,844],[412,915],[768,1024],[1024,768],[1366,768],[1920,1080],[2560,1440],[844,390]];
@@ -227,7 +227,7 @@ const jsErrs=a=>a.filter(e=>!NET.test(e)&&!/ResizeObserver loop/.test(e));
     chk(`axe ${lab}: contrast`,!ax.some(v=>v.id==='color-contrast'),ax.filter(v=>v.id==='color-contrast'),true);
     await ctx.close()}}catch(e){chk('axe suplimentar',false,String(e).slice(0,150),true)}}
 
-  /* 14. Dialog de confirmare propriu (în loc de confirm()) */
+  /* 14.1.0. Dialog de confirmare propriu (în loc de confirm()) */
   {const {ctx,pg,errs}=await fresh(br,{viewport:{width:390,height:844}});await pg.goto(base);await pg.waitForTimeout(1200);
    const has=await pg.evaluate(()=>typeof askOk==='function');chk('dialog de confirmare: askOk definit',has);
    if(has){const exp={ro:['Anulează','Continuă'],en:['Cancel','Continue'],fr:['Annuler','Continuer'],de:['Abbrechen','Fortfahren'],es:['Cancelar','Continuar'],it:['Annulla','Continua'],hu:['Mégse','Folytatás']};
