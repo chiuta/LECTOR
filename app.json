@@ -71,8 +71,8 @@
     "lang",
     "lector.lang"
   ],
-  "sizeBytes": 422194,
-  "sha256": "95c961d037edb8f815aa4394cb43c5da2a84ee3919200beb952ecd220cb07ca2",
+  "sizeBytes": 447656,
+  "sha256": "3559077036cefc47449833d4995361c60b67346b606a2b277417cfdb74837b06",
   "csp": {
     "present": true,
     "directives": {
@@ -108,6 +108,7 @@
       "core",
       "store",
       "dialog",
+      "view",
       "a11y",
       "label",
       "bundle"
@@ -119,6 +120,7 @@
       "core",
       "store",
       "dialog",
+      "view",
       "a11y",
       "label",
       "bundle"
