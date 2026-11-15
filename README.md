@@ -6,7 +6,7 @@ Books read aloud — with your device’s local voices, no account. One HTML fil
 
 **[Open the app →](https://lector.chiuta.ro/)**
 
-_Version: 14.1.0 · Last updated: 2026-11-15_
+_Version: 14.1.1 · Last updated: 2026-11-15_
 
 ## Features
 
