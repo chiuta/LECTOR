@@ -6,7 +6,7 @@ Libri letti ad alta voce — con le voci locali del tuo dispositivo, senza accou
 
 **[Apri l’app →](https://lector.chiuta.ro/)**
 
-_Versione: 12 · Ultimo aggiornamento: 2026-11-03_
+_Versione: 13 · Ultimo aggiornamento: 2026-11-15_
 
 ## Funzioni
 

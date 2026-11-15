@@ -2,8 +2,8 @@
   "schema": 1,
   "slug": "lector",
   "name": "LECTOR — cărți citite cu voce tare",
-  "version": "12",
-  "updated": "2026-11-03",
+  "version": "13",
+  "updated": "2026-11-15",
   "description": "",
   "egress": [
     {
@@ -71,8 +71,8 @@
     "lang",
     "lector.lang"
   ],
-  "sizeBytes": 379483,
-  "sha256": "c8d5925cd03b099854f1ef92a3219a388b31c2d6244a909c98dc8ba4c2079405",
+  "sizeBytes": 384403,
+  "sha256": "64612e33b6c7bf07c7b97099abd6126be6e5e19c256fda8ad0231b7c723f7210",
   "csp": {
     "present": true,
     "directives": {

@@ -10,7 +10,7 @@ Făcut pentru ASFAN. Versiunea 12.
 
 **Aplicația live:** https://lector.chiuta.ro/
 
-_Versiune: 12 · Ultima actualizare: 2026-11-03_
+_Versiune: 13 · Ultima actualizare: 2026-11-15_
 
 ## Ce face
 
