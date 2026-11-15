@@ -64,14 +64,15 @@
     "indexedDB",
     "localStorage",
     "Web Crypto",
+    "WebGL",
     "WebGPU"
   ],
   "storageKeys": [
     "lang",
     "lector.lang"
   ],
-  "sizeBytes": 327417,
-  "sha256": "4c71a188503e9e5b3de4f647ca1e66fca20a7a82b60b73f6b672ac3f4af591b4",
+  "sizeBytes": 379483,
+  "sha256": "c8d5925cd03b099854f1ef92a3219a388b31c2d6244a909c98dc8ba4c2079405",
   "csp": {
     "present": true,
     "directives": {
