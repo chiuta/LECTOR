@@ -6,7 +6,8 @@ const R=path.resolve(__dirname,'..');const html=fs.readFileSync(path.join(R,'ind
  let bad=0,warn=0;
  const rules={'no-dupe-keys':2,'no-dupe-args':2,'no-dupe-class-members':2,'no-dupe-else-if':2,'no-duplicate-case':2,'no-unreachable':2,'no-redeclare':2,'no-const-assign':2,'no-func-assign':1,'no-self-assign':2,'no-cond-assign':0,'no-unsafe-finally':2,'use-isnan':2,'valid-typeof':2,'no-empty-character-class':2,'no-unsafe-negation':2,'getter-return':2,'no-loss-of-precision':2,'no-sparse-arrays':1,'no-unsafe-optional-chaining':2,'no-async-promise-executor':2,'no-misleading-character-class':1,'no-prototype-builtins':0,'no-unused-labels':1,'no-useless-escape':0,'no-eval':1,'no-implied-eval':1,'no-new-func':1,'no-script-url':1,'eqeqeq':0,'no-undef':0,'no-unused-vars':0,'no-empty':0,'require-atomic-updates':0};
  const eslint=new ESLint({overrideConfigFile:true,overrideConfig:[{files:['**/*.js'],languageOptions:{ecmaVersion:2022,sourceType:'script'},rules}]});
- const items=[...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)].map((m,i)=>['index.html#script'+i,m[1]]);
+ // doar scripturile JavaScript (blocurile type="application/json" sunt date, nu cod)
+ const items=[...html.matchAll(/<script(?![^>]*\bsrc=)([^>]*)>([\s\S]*?)<\/script>/g)].filter(m=>!/\btype=["'](?!module|text\/javascript)/i.test(m[1])).map((m,i)=>['index.html#script'+i,m[2]]);
  items.push(['sw.js',fs.readFileSync(path.join(R,'sw.js'),'utf8')]);
  for(const [n,src] of items){
   const [r]=await eslint.lintText(src,{filePath:n.replace('#','_')+'.js'});
