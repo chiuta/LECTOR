@@ -16,7 +16,8 @@ ok(/<meta[^>]+name=["']viewport["']/.test(html),'meta viewport');
 ok(/Content-Security-Policy/i.test(html),'meta Content-Security-Policy');
 ok(!/(?:\b(?:src|href|action)=["']|fetch\(["']|import\(["']|url\(["']?)http:\/\/(?!localhost|127\.0\.0\.1)/.test(html),'fără resurse încărcate prin http:// nesecurizat');
 for(const m of html.matchAll(/<script[^>]+src=["']https?:[^>]*>/g))ok(/integrity=/.test(m[0])&&/crossorigin/.test(m[0]),'script extern cu integrity+crossorigin: '+m[0].slice(0,80));
-const kb=Buffer.byteLength(html)/1024;ok(kb<420,'mărime index.html '+kb.toFixed(0)+' KB (buget 420 KB)');
+const kb=Buffer.byteLength(html)/1024;// buget 420 → 600 KB: kitul fff și motorul de texturi, apoi fff-kit 1.8.0 cu rezervele pentru browsere mai vechi (ES2017, ~+60 KB) sunt în pagină
+ok(kb<600,'mărime index.html '+kb.toFixed(0)+' KB (buget 600 KB)');
 const av=/const APPV='(v\d+)'/.exec(html),sv=/const V='(v\d+)'/.exec(rd('sw.js'));
 ok(av&&sv&&av[1]===sv[1],'versiune aplicație = versiune service worker ('+(av&&av[1])+' / '+(sv&&sv[1])+')');
 ok(fs.existsSync(path.join(R,'CNAME')),'CNAME există ('+(fs.existsSync(path.join(R,'CNAME'))?rd('CNAME').trim():'-')+')');
