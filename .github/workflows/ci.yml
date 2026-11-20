@@ -18,13 +18,13 @@ concurrency:
 jobs:
   static:
     name: Verificări statice
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: 26
       - run: node tests/check.js
       - run: node tests/check-deep.js
       - run: npm ci
@@ -42,14 +42,14 @@ jobs:
       matrix:
         include:
           # Linux
-          - { os: ubuntu-latest, project: chromium, install: chromium, experimental: false }
-          - { os: ubuntu-latest, project: firefox, install: firefox, experimental: false }
-          - { os: ubuntu-latest, project: msedge, install: msedge, experimental: false }
-          - { os: ubuntu-latest, project: pixel, install: chromium, experimental: false }
-          - { os: ubuntu-latest, project: galaxy, install: chromium, experimental: false }
-          - { os: ubuntu-latest, project: webkit, install: webkit, experimental: true }
-          - { os: ubuntu-latest, project: iphone, install: webkit, experimental: true }
-          - { os: ubuntu-latest, project: ipad, install: webkit, experimental: true }
+          - { os: ubuntu-26.04, project: chromium, install: chromium, experimental: false }
+          - { os: ubuntu-26.04, project: firefox, install: firefox, experimental: false }
+          - { os: ubuntu-26.04, project: msedge, install: msedge, experimental: false }
+          - { os: ubuntu-26.04, project: pixel, install: chromium, experimental: false }
+          - { os: ubuntu-26.04, project: galaxy, install: chromium, experimental: false }
+          - { os: ubuntu-26.04, project: webkit, install: webkit, experimental: true }
+          - { os: ubuntu-26.04, project: iphone, install: webkit, experimental: true }
+          - { os: ubuntu-26.04, project: ipad, install: webkit, experimental: true }
           # macOS: WebKit-ul real de pe Mac, cel mai apropiat de Safari
           - { os: macos-latest, project: webkit, install: webkit, experimental: false }
           - { os: macos-latest, project: iphone, install: webkit, experimental: false }
@@ -64,7 +64,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: 26
           cache: npm
           cache-dependency-path: tests/package-lock.json
       - run: npm ci
@@ -90,11 +90,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { os: ubuntu-latest, project: chromium, install: chromium, experimental: false }
-          - { os: ubuntu-latest, project: firefox, install: firefox, experimental: false }
-          - { os: ubuntu-latest, project: pixel, install: chromium, experimental: false }
-          - { os: ubuntu-latest, project: webkit, install: webkit, experimental: true }
-          - { os: ubuntu-latest, project: iphone, install: webkit, experimental: true }
+          - { os: ubuntu-26.04, project: chromium, install: chromium, experimental: false }
+          - { os: ubuntu-26.04, project: firefox, install: firefox, experimental: false }
+          - { os: ubuntu-26.04, project: pixel, install: chromium, experimental: false }
+          - { os: ubuntu-26.04, project: webkit, install: webkit, experimental: true }
+          - { os: ubuntu-26.04, project: iphone, install: webkit, experimental: true }
           - { os: macos-latest, project: webkit, install: webkit, experimental: false }
           - { os: macos-latest, project: iphone, install: webkit, experimental: false }
           - { os: macos-latest, project: ipad, install: webkit, experimental: false }
@@ -108,7 +108,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: 26
           cache: npm
           cache-dependency-path: tests/package-lock.json
       - run: npm ci
@@ -127,7 +127,7 @@ jobs:
   lighthouse:
     name: Lighthouse
     needs: static
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     defaults:
       run:
@@ -136,7 +136,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 22
+          node-version: 26
       - run: npx --yes @lhci/cli@0.14.0 autorun --config=lighthouserc.json
         continue-on-error: true
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
