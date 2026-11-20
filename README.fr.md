@@ -6,7 +6,7 @@ Des livres lus à voix haute — avec les voix locales de votre appareil, sans c
 
 **[Ouvrir l’application →](https://lector.chiuta.ro/)**
 
-_Version : 14.1.3 · Dernière mise à jour : 2026-11-20_
+_Version : 14.1.4 · Dernière mise à jour : 2026-11-20_
 
 ## Fonctionnalités
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 14.1.4 — 2026-11-20
+
+- Bara fixă de jos (`#bar`) are acum `z-index: 20`: butonul de copiere a detaliilor pentru suport (`.foot button`, cu `opacity: .85`, deci strat propriu) se desena peste ea la derulare (constatat cu sonda de acoperire a bateriei adversariale, 20 noiembrie 2026)
+
 ## 14.1.3 — 2026-11-20
 
 - fff-kit 1.8.1: când `localStorage`/`sessionStorage` aruncă sau lipsesc (cookie-uri și date de site blocate, WebView fără stocare, `<iframe sandbox>`), kitul pune în loc o stocare în memorie, iar pagina pornește în loc să se oprească; datele nu se păstrează după închiderea paginii

@@ -6,7 +6,7 @@ Livros lidos em voz alta — com as vozes locais do teu dispositivo, sem conta. 
 
 **[Abrir a aplicação →](https://lector.chiuta.ro/)**
 
-_Versão: 14.1.3 · Última atualização: 2026-11-20_
+_Versão: 14.1.4 · Última atualização: 2026-11-20_
 
 ## Funcionalidades
 
