@@ -120,7 +120,9 @@ jobs:
         run: printf 'Acquire::Retries "3";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | sudo tee /etc/apt/apt.conf.d/99-retea >/dev/null
       - run: npx playwright install --with-deps ${{ matrix.install }}
       - run: node prepare.js
-      - run: node run-extra.js ${{ matrix.project }}
+      - name: Teste suplimentare (pas limitat la 10 min; durează de obicei 1–2 min)
+        timeout-minutes: 10
+        run: node run-extra.js ${{ matrix.project }}
       - name: Rezultate
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
