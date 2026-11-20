@@ -2,8 +2,11 @@
 const fs=require('fs'),path=require('path');
 const R=path.resolve(__dirname,'..');
 const txt=['index.html','README.md'].filter(f=>fs.existsSync(path.join(R,f))).map(f=>fs.readFileSync(path.join(R,f),'utf8')).join('\n');
-const urls=[...new Set([...txt.matchAll(/https:\/\/[^\s"'<>)\]`]+/g)].map(m=>m[0].replace(/[.,;]+$/,'')))].filter(u=>!/\$\{|\{\}|\*\./.test(u)&&!/localhost|example\.com/.test(u)&&!/[=@?&#]$/.test(u));
-// prefixele de URL completate în cod (…?url=, …/pdfjs-dist@) nu sunt linkuri; gazdele fără cale și fără „/” (surse CSP, egress) contează doar dacă răspund
+// nu sunt linkuri: prefixe de URL completate în cod (…?url=, …/pdfjs-dist@, …/embed/) și adresele-model din placeholdere (serverul-tau.ro …).
+// Gazdele fără cale și fără „/” (surse CSP, egress) contează doar dacă răspund; chiuta.ro/ și linkurile cu cale rămân verificate strict.
+const PREFIX=/[=@?&#]$|^https:\/\/(player\.vimeo\.com\/video|www\.dailymotion\.com\/(embed\/)?video|www\.youtube-nocookie\.com\/embed)\/$/;
+const MODEL=/\/\/(serverul-tau\.ro|your-server\.com|votre-serveur\.fr|dein-server\.de|tu-servidor\.es|tuo-server\.it|sajat-szerver\.hu|o-teu-servidor\.pt)\//;
+const urls=[...new Set([...txt.matchAll(/https:\/\/[^\s"'<>)\]`]+/g)].map(m=>m[0].replace(/[.,;]+$/,'')))].filter(u=>!/\$\{|\{\}|\*\./.test(u)&&!/localhost|example\.com/.test(u)&&!PREFIX.test(u)&&!MODEL.test(u));
 (async()=>{let bad=0;
  for(const u of urls){try{const c=new AbortController();const t=setTimeout(()=>c.abort(),15000);
   let r=await fetch(u,{method:'HEAD',redirect:'follow',signal:c.signal,headers:{'user-agent':'Mozilla/5.0 (link-check)'}});
